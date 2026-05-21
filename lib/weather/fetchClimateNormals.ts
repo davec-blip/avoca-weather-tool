@@ -22,6 +22,7 @@ export async function fetchClimateNormals(lat: number, lng: number): Promise<Cli
   url.searchParams.set('end_date', endDate)
   url.searchParams.set('models', 'EC_Earth3P_HR')
   url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,precipitation_sum')
+  url.searchParams.set('temperature_unit', 'fahrenheit')
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`Open-Meteo climate failed: ${res.status}`)
