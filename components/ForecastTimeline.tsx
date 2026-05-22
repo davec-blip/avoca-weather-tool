@@ -25,10 +25,10 @@ function getConditionLabel(code: number): string {
 // Heating: spikes below 25°F, elevated 26–40°F
 // Shoulder fallback: use anomaly if no absolute trigger
 function getExpectedDemand(high: number, low: number, avgHigh: number): { label: string; color: string } {
-  if (high >= 90 || low <= 25) return { label: 'Peak',     color: '#DC2626' }
-  if (high >= 80 || low <= 40) return { label: 'Elevated', color: '#D97706' }
-  // Shoulder season: flag if unusually warm/cold vs historical avg (≥8°F swing)
-  if (Math.abs(high - avgHigh) >= 8) return { label: 'Elevated', color: '#3774BA' }
+  if (high >= 95 || low <= 20) return { label: 'Peak',     color: '#DC2626' }
+  if (high >= 85 || low <= 35) return { label: 'Elevated', color: '#D97706' }
+  // Shoulder season: flag if ≥15°F above monthly avg
+  if (high - avgHigh >= 15)    return { label: 'Elevated', color: '#3774BA' }
   return { label: 'Typical', color: '#94A3B8' }
 }
 
