@@ -35,7 +35,7 @@ export default function LeadFlowTable() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const refetch = () => {
-    fetch('/api/admin/leads')
+    fetch('/api/admin/leads', { cache: 'no-store' })
       .then(r => r.json())
       .then(data => { setLeads(data); setLoading(false); setLastUpdated(new Date()) })
       .catch(() => setLoading(false))

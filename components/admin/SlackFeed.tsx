@@ -18,7 +18,7 @@ export default function SlackFeed() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
   const refetch = () => {
-    fetch('/api/admin/notifications')
+    fetch('/api/admin/notifications', { cache: 'no-store' })
       .then(r => r.json())
       .then(data => { setNotes(data); setLoading(false); setLastUpdated(new Date()) })
       .catch(() => setLoading(false))

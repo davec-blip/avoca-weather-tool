@@ -47,11 +47,11 @@ export default function AdminTabs() {
         ))}
       </div>
 
-      {/* Tab content */}
-      {active === 'CRM' && <CRMTable />}
-      {active === 'Slack' && <SlackFeed />}
-      {active === 'Lead Flow' && <LeadFlowTable />}
-      {active === 'AE Directory' && <AEDirectory />}
+      {/* Tab content — always mounted so polling intervals survive tab switches */}
+      <div style={{ display: active === 'CRM' ? 'block' : 'none' }}><CRMTable /></div>
+      <div style={{ display: active === 'Slack' ? 'block' : 'none' }}><SlackFeed /></div>
+      <div style={{ display: active === 'Lead Flow' ? 'block' : 'none' }}><LeadFlowTable /></div>
+      <div style={{ display: active === 'AE Directory' ? 'block' : 'none' }}><AEDirectory /></div>
     </div>
   )
 }
