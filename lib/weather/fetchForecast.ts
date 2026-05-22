@@ -25,6 +25,7 @@ export async function fetchForecast(lat: number, lng: number): Promise<ForecastD
   url.searchParams.set('precipitation_unit', 'mm')
   url.searchParams.set('timezone', 'auto')
   url.searchParams.set('forecast_days', '14')
+  url.searchParams.set('past_days', '7')
 
   const res = await fetch(url.toString())
   if (!res.ok) throw new Error(`Open-Meteo forecast failed: ${res.status}`)

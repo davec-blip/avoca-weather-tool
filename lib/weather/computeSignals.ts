@@ -8,6 +8,9 @@ export interface WeatherSignals {
   dailyCodes?: number[]
   dailyDates?: string[]
 
+  // Past-week storm context (from 7-day lookback)
+  pastStormDays?: number
+
   // Temperature — Week 1
   week1HighF: number
   week1LowF: number
@@ -112,6 +115,8 @@ function getHourlySliceForDay(hourly: ForecastData['hourly'], dayIndex: number) 
   }
 }
 
+const PAST_DAYS = 7 // days of historical data prepended by Open-Meteo
+
 export function computeSignals(
   forecast: ForecastData,
   climate: ClimateData
@@ -119,13 +124,17 @@ export function computeSignals(
   const daily = forecast.daily
   const hourly = forecast.hourly
 
-  const w1Highs = daily.temperature_2m_max.slice(0, 7)
-  const w1Lows = daily.temperature_2m_min.slice(0, 7)
-  const w1Codes = daily.weathercode.slice(0, 7)
-  const w1Precip = daily.precipitation_sum.slice(0, 7)
-  const w2Highs = daily.temperature_2m_max.slice(7, 14)
-  const w2Lows = daily.temperature_2m_min.slice(7, 14)
-  const w2Codes = daily.weathercode.slice(7, 14)
+  // Past 7 days (actual observed weather)
+  const pastCodes = daily.weathercode.slice(0, PAST_DAYS)
+
+  // Forecast days 1–7 (week 1) and 8–14 (week 2) — offset by PAST_DAYS
+  const w1Highs = daily.temperature_2m_max.slice(PAST_DAYS, PAST_DAYS + 7)
+  const w1Lows = daily.temperature_2m_min.slice(PAST_DAYS, PAST_DAYS + 7)
+  const w1Codes = daily.weathercode.slice(PAST_DAYS, PAST_DAYS + 7)
+  const w1Precip = daily.precipitation_sum.slice(PAST_DAYS, PAST_DAYS + 7)
+  const w2Highs = daily.temperature_2m_max.slice(PAST_DAYS + 7, PAST_DAYS + 14)
+  const w2Lows = daily.temperature_2m_min.slice(PAST_DAYS + 7, PAST_DAYS + 14)
+  const w2Codes = daily.weathercode.slice(PAST_DAYS + 7, PAST_DAYS + 14)
 
   // ── Climate normals ──────────────────────────────────────────────────────
   const climHighs = climate.daily.temperature_2m_max.filter(v => v != null && !isNaN(v))
@@ -174,16 +183,19 @@ export function computeSignals(
     else curStreak = 0
   }
 
-  // ── Heat index peak (apparent_temperature max across 14 days) ────────────
-  const allApparent = daily.apparent_temperature_max
+  // ── Heat index peak (apparent_temperature max across forecast 14 days) ─────
+  const allApparent = daily.apparent_temperature_max.slice(PAST_DAYS, PAST_DAYS + 14)
   const heatIndexPeakF = allApparent.length ? Math.max(...allApparent) : week1HighF
 
-  // ── Temp swing max (largest single-day high - low delta) ─────────────────
+  // ── Temp swing max (largest single-day high - low delta, forecast only) ───
   let tempSwingMaxF = 0
-  for (let i = 0; i < 14; i++) {
+  for (let i = PAST_DAYS; i < PAST_DAYS + 14; i++) {
     const swing = daily.temperature_2m_max[i] - daily.temperature_2m_min[i]
     if (swing > tempSwingMaxF) tempSwingMaxF = swing
   }
+
+  // ── Past-week storm context ───────────────────────────────────────────────
+  const pastStormDays = pastCodes.filter(isStormCode).length
 
   // ── Storm signals W1 ─────────────────────────────────────────────────────
   const stormDaysW1 = w1Codes.filter(isStormCode).length
@@ -193,10 +205,19 @@ export function computeSignals(
   const heavyRainDaysW1 = w1Precip.filter(p => p > 25).length
   const totalPrecip7DayMm = w1Precip.reduce((a, b) => a + b, 0)
 
-  // Post-storm days W1: days 2–7 (index 1–6) that immediately follow a storm day
+  // Post-storm days W1:
+  // 1. If the past week had real storm days, count clear days at the start of W1
+  // 2. Also catch storms that end within W1 itself (day after a storm day)
   let postStormDaysW1 = 0
+  if (pastStormDays >= 2) {
+    // Real storm event last week — count opening clear days of W1 (up to 3)
+    for (let i = 0; i < 3; i++) {
+      if (!isStormCode(w1Codes[i])) postStormDaysW1++
+      else break
+    }
+  }
   for (let i = 1; i < 7; i++) {
-    if (isStormCode(w1Codes[i - 1])) postStormDaysW1++
+    if (isStormCode(w1Codes[i - 1]) && !isStormCode(w1Codes[i])) postStormDaysW1++
   }
 
   // ── Storm signals W2 ─────────────────────────────────────────────────────
@@ -204,12 +225,11 @@ export function computeSignals(
   const thunderstormDaysW2 = w2Codes.filter(isThunderstormCode).length
   const hasFreezeRainW2 = w2Codes.some(isFreezeRainCode)
 
-  // Post-storm days W2: days that immediately follow a storm day within W2
-  // Also count day 8 (index 7) if day 7 (index 6) was a storm
+  // Post-storm days W2: days immediately following a storm day (within or crossing from W1)
   let postStormDaysW2 = 0
   const allCodesForPostStorm = [...w1Codes, ...w2Codes]
   for (let i = 7; i < 14; i++) {
-    if (isStormCode(allCodesForPostStorm[i - 1])) postStormDaysW2++
+    if (isStormCode(allCodesForPostStorm[i - 1]) && !isStormCode(allCodesForPostStorm[i])) postStormDaysW2++
   }
 
   // ── Precip anomaly ────────────────────────────────────────────────────────
@@ -226,7 +246,7 @@ export function computeSignals(
   let heatStressDaysW2 = 0
 
   for (let d = 0; d < 7; d++) {
-    const { humidity } = getHourlySliceForDay(hourly, d)
+    const { humidity } = getHourlySliceForDay(hourly, d + PAST_DAYS)
     const avgHum = humidity.length
       ? humidity.reduce((a, b) => a + b, 0) / humidity.length
       : 50
@@ -235,13 +255,13 @@ export function computeSignals(
     if (w1Highs[d] > 88 && avgHum > 60) heatStressDaysW1++
   }
 
-  for (let d = 7; d < 14; d++) {
-    const { humidity } = getHourlySliceForDay(hourly, d)
+  for (let d = 0; d < 7; d++) {
+    const { humidity } = getHourlySliceForDay(hourly, d + PAST_DAYS + 7)
     const avgHum = humidity.length
       ? humidity.reduce((a, b) => a + b, 0) / humidity.length
       : 50
     w2HumidityByDay.push(avgHum)
-    if (w2Highs[d - 7] > 88 && avgHum > 60) heatStressDaysW2++
+    if (w2Highs[d] > 88 && avgHum > 60) heatStressDaysW2++
   }
 
   const avgHumidityW1 = w1HumidityByDay.length
@@ -252,10 +272,12 @@ export function computeSignals(
     : 50
 
   return {
-    dailyHighsF: daily.temperature_2m_max.slice(0, 14),
-    dailyLowsF: daily.temperature_2m_min.slice(0, 14),
-    dailyCodes: daily.weathercode.slice(0, 14),
-    dailyDates: daily.time.slice(0, 14),
+    dailyHighsF: daily.temperature_2m_max.slice(PAST_DAYS, PAST_DAYS + 14),
+    dailyLowsF: daily.temperature_2m_min.slice(PAST_DAYS, PAST_DAYS + 14),
+    dailyCodes: daily.weathercode.slice(PAST_DAYS, PAST_DAYS + 14),
+    dailyDates: daily.time.slice(PAST_DAYS, PAST_DAYS + 14),
+
+    pastStormDays,
 
     week1HighF,
     week1LowF,

@@ -47,6 +47,9 @@ MARKET CONTEXT:
 - 10-year average high for ${month}: ${signals.monthlyAvgHighF.toFixed(1)}°F
 - Temperature vs. seasonal average: ${anomalyLabel}
 
+PAST WEEK (Observed):
+- Significant weather events last 7 days: ${signals.pastStormDays ?? 0} day(s)${(signals.pastStormDays ?? 0) >= 2 ? ' — recent storm activity, recovery demand likely' : ''}
+
 WEEK 1 CONDITIONS (Days 1–7):
 - Demand level: ${lead.phaseW1} (CALM = normal, BUILDING = rising, SURGE = high, POST_EVENT = elevated/recovery)
 - Above-average heat days: ${signals.daysAbove90W1}
