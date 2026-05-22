@@ -184,7 +184,7 @@ export default async function ReportPage({ params }: Props) {
             AI that answers every call and books every job
           </div>
           <a
-            href="https://avoca.ai/demo"
+            href="https://avoca.ai/demo?utm_source=demand_forecast_tool&utm_medium=web&utm_campaign=demo_cta&utm_content=report_footer"
             target="_blank"
             rel="noopener noreferrer"
             style={{

@@ -24,7 +24,7 @@ export default function HomePage() {
             Admin
           </a>
           <a
-            href="https://avoca.ai/demo"
+            href="https://avoca.ai/demo?utm_source=demand_forecast_tool&utm_medium=web&utm_campaign=demo_cta&utm_content=nav"
             target="_blank"
             rel="noopener noreferrer"
             style={{
@@ -198,7 +198,7 @@ export default function HomePage() {
           Always-on agents that answer every call, fill every board, and keep your team focused on the work that matters.
         </p>
         <a
-          href="https://avoca.ai/demo"
+          href="https://avoca.ai/demo?utm_source=demand_forecast_tool&utm_medium=web&utm_campaign=demo_cta&utm_content=landing_cta"
           target="_blank"
           rel="noopener noreferrer"
           style={{
