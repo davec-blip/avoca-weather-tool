@@ -4,6 +4,20 @@ import { eq } from 'drizzle-orm'
 import type { WeatherSignals } from '../weather/computeSignals'
 import type { Phase } from '../scoring/demandScore'
 
+function getRoutingContext(assignmentSource: string, aeName: string, website?: string | null): string {
+  const firstName = aeName.split(' ')[0]
+  switch (assignmentSource) {
+    case 'CRM_MATCH':
+      return `Existing account — ${website ?? 'this company'} is already in ${firstName}'s book of business.`
+    case 'REGIONAL':
+      return `New lead — routed to ${firstName} as the regional AE covering this market.`
+    case 'FALLBACK':
+      return `New lead — no regional AE on record, assigned to ${firstName} via round-robin.`
+    default:
+      return `Routed to ${firstName}.`
+  }
+}
+
 function getDemandContext(
   phaseW1: Phase,
   phaseW2: Phase,
@@ -61,8 +75,9 @@ export async function writeSlackNotification(params: {
 
   const demandContext = getDemandContext(params.phaseW1, params.phaseW2, params.anomalyLabel, params.city)
   const outreachDate = getOutreachDate(params.phaseW1, params.phaseW2)
+  const routingContext = getRoutingContext(params.assignmentSource, aeName, params.website)
 
-  const message = `@${aeFirstName} — New lead from the Demand Forecast page
+  const message = `@${aeFirstName} — New submission from the Demand Forecast page
 
 • Name: ${params.name}
 • Company: ${params.website ?? 'not provided'}
@@ -71,6 +86,7 @@ export async function writeSlackNotification(params: {
 
 ${demandContext}
 
+${routingContext}
 Reach out by ${outreachDate}.`
 
   await db.insert(notifications).values({
