@@ -32,12 +32,19 @@ const SOURCE_COLORS: Record<string, { bg: string; text: string; label: string }>
 export default function LeadFlowTable() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
 
-  useEffect(() => {
+  const refetch = () => {
     fetch('/api/admin/leads')
       .then(r => r.json())
-      .then(data => { setLeads(data); setLoading(false) })
+      .then(data => { setLeads(data); setLoading(false); setLastUpdated(new Date()) })
       .catch(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    refetch()
+    const interval = setInterval(refetch, 10000)
+    return () => clearInterval(interval)
   }, [])
 
   if (loading) return <div className="skeleton" style={{ height: '300px', borderRadius: 'var(--radius-md)' }} />
@@ -64,11 +71,30 @@ export default function LeadFlowTable() {
       <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: '16px', fontWeight: '600' }}>Lead Flow</div>
-          <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>{leads.length} submissions</div>
+          <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>
+            {leads.length} submissions
+            {lastUpdated && (
+              <span style={{ marginLeft: '8px', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+                · updated {lastUpdated.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' })}
+              </span>
+            )}
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)' }} />
-          <span style={{ fontSize: '12px', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>Live</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            onClick={refetch}
+            style={{
+              fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)',
+              background: 'none', border: '1px solid var(--border-subtle)', borderRadius: '4px',
+              padding: '4px 10px', cursor: 'pointer',
+            }}
+          >
+            Refresh
+          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)' }} />
+            <span style={{ fontSize: '12px', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>Live</span>
+          </div>
         </div>
       </div>
 
