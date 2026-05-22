@@ -20,6 +20,18 @@ function getConditionLabel(code: number): string {
   return 'Cloudy'
 }
 
+// HVAC demand level based on absolute temperature thresholds
+// Cooling: spikes above 90°F, elevated 80–89°F
+// Heating: spikes below 25°F, elevated 26–40°F
+// Shoulder fallback: use anomaly if no absolute trigger
+function getExpectedDemand(high: number, low: number, avgHigh: number): { label: string; color: string } {
+  if (high >= 90 || low <= 25) return { label: 'Peak',     color: '#DC2626' }
+  if (high >= 80 || low <= 40) return { label: 'Elevated', color: '#D97706' }
+  // Shoulder season: flag if unusually warm/cold vs historical avg (≥8°F swing)
+  if (Math.abs(high - avgHigh) >= 8) return { label: 'Elevated', color: '#3774BA' }
+  return { label: 'Typical', color: '#94A3B8' }
+}
+
 // Color-code background by temperature vs normal (using week high as proxy for urgency)
 function urgencyBg(high: number, avgHigh: number): string {
   const delta = high - avgHigh
@@ -269,9 +281,10 @@ export default function ForecastTimeline({ signals }: Props) {
           </div>
           <div>
             <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>EXPECTED DEMAND</div>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: urgencyTextColor(days[tooltip].high, avgHigh) }}>
-              {days[tooltip].high - avgHigh >= 8 ? 'Peak' : days[tooltip].high - avgHigh >= 3 ? 'Elevated' : 'Typical'}
-            </div>
+            {(() => {
+              const d = getExpectedDemand(days[tooltip].high, days[tooltip].low, avgHigh)
+              return <div style={{ fontSize: '14px', fontWeight: '600', color: d.color }}>{d.label}</div>
+            })()}
           </div>
         </div>
       )}
