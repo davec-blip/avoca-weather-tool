@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 interface Props {
   leadId: string
@@ -98,6 +98,15 @@ export default function NarrativePanel({ leadId, noCard }: Props) {
   )
 }
 
+function parseBold(text: string): React.ReactNode[] {
+  const parts = text.split(/\*\*(.+?)\*\*/g)
+  return parts.map((part, i) =>
+    i % 2 === 1
+      ? <strong key={i} style={{ color: 'var(--text-primary)', fontWeight: '700' }}>{part}</strong>
+      : part
+  )
+}
+
 function renderMarkdown(text: string) {
   const lines = text.split('\n')
   return lines.map((line, i) => {
@@ -123,17 +132,16 @@ function renderMarkdown(text: string) {
       return (
         <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '5px', alignItems: 'flex-start' }}>
           <span style={{ color: 'var(--accent)', flexShrink: 0, marginTop: '2px', fontWeight: '700', fontSize: '11px' }}>›</span>
-          <span
-            style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.55 }}
-            dangerouslySetInnerHTML={{ __html: line.replace('- ', '').replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--text-primary)">$1</strong>') }}
-          />
+          <span style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.55 }}>
+            {parseBold(line.replace(/^-\s*/, ''))}
+          </span>
         </div>
       )
     }
     if (line.trim() === '') return <div key={i} style={{ height: '5px' }} />
     return (
       <p key={i} style={{ color: 'var(--text-secondary)', marginBottom: '6px', fontSize: '13px', lineHeight: 1.6 }}>
-        {line}
+        {parseBold(line)}
       </p>
     )
   })

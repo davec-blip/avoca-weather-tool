@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { leads } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import type { WeatherSignals } from '@/lib/weather/computeSignals'
+import { computeDemandScoreFromSignals, classifyPhase, getSituationLabel } from '@/lib/scoring/demandScore'
 
 // Extend Vercel serverless timeout — Claude generation can take 15–30s
 export const maxDuration = 60
@@ -24,6 +25,13 @@ export async function POST(req: NextRequest) {
 
     const signals = lead.weatherSignals as WeatherSignals
     if (!signals) return new Response('No signals stored for this lead', { status: 400 })
+
+    // Recompute phases from stored signals using current logic — avoids stale DB values
+    const scoreW1 = computeDemandScoreFromSignals(signals, 'w1')
+    const scoreW2 = computeDemandScoreFromSignals(signals, 'w2')
+    const phaseW1 = classifyPhase('w1', signals, scoreW1)
+    const phaseW2 = classifyPhase('w2', signals, scoreW2)
+    const situationLabel = getSituationLabel(phaseW1, phaseW2)
 
     const now = new Date()
     const today = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
@@ -51,7 +59,7 @@ PAST WEEK (Observed):
 - Significant weather events last 7 days: ${signals.pastStormDays ?? 0} day(s)${(signals.pastStormDays ?? 0) >= 2 ? ' — recent storm activity, recovery demand likely' : ''}
 
 WEEK 1 CONDITIONS (Days 1–7):
-- Demand level: ${lead.phaseW1} (CALM = normal, BUILDING = rising, SURGE = high, POST_EVENT = elevated/recovery)
+- Demand level: ${phaseW1} (CALM = normal, BUILDING = rising, SURGE = high, POST_EVENT = elevated/recovery)
 - Above-average heat days: ${signals.daysAbove90W1}
 - Heat + humidity days: ${signals.heatStressDaysW1}
 - Consecutive warm days: ${signals.consecutiveHotDaysW1}
@@ -59,11 +67,11 @@ WEEK 1 CONDITIONS (Days 1–7):
 - Weather event days: ${signals.stormDaysW1}
 
 WEEK 2 CONDITIONS (Days 8–14):
-- Demand level: ${lead.phaseW2}
+- Demand level: ${phaseW2}
 - Above-average heat days: ${signals.daysAbove90W2}
 - Weather event days: ${signals.stormDaysW2}
 
-OVERALL SITUATION: ${lead.situationLabel}
+OVERALL SITUATION: ${situationLabel}
 
 Write ONLY these two sections. No title, no header, no location line. Start directly with the first section heading.
 
