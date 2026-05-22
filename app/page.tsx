@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import LeadForm from '@/components/LeadForm'
 import StatCounters from '@/components/StatCounters'
 
@@ -34,7 +35,7 @@ export default function HomePage() {
         height: '60px',
         justifyContent: 'space-between',
       }}>
-        <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '28px', display: 'block' }} />
+        <Image src="/avoca-logo.svg" alt="Avoca" width={114} height={28} style={{ display: 'block' }} />
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <a href="/admin" style={{ color: 'var(--text-muted)', fontSize: '14px', textDecoration: 'none', fontWeight: '500' }}>
             Admin
@@ -161,7 +162,7 @@ export default function HomePage() {
             letterSpacing: '0.08em',
             marginBottom: '10px',
           }}>
-            WHAT'S IN THE REPORT
+            WHAT&apos;S IN THE REPORT
           </div>
           <h2 style={{
             fontFamily: 'var(--font-display)',
@@ -261,7 +262,7 @@ export default function HomePage() {
         fontSize: '13px',
         background: 'var(--bg-surface)',
       }}>
-        <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '22px', display: 'block', opacity: 0.7 }} />
+        <Image src="/avoca-logo.svg" alt="Avoca" width={89} height={22} style={{ display: 'block', opacity: 0.7 }} />
         <span>Growth Engineer Case Study — Davison Chung</span>
       </footer>
     </main>

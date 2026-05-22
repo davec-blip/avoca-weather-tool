@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import AdminTabs from '@/components/admin/AdminTabs'
 
 export default function AdminPage() {
@@ -12,7 +13,7 @@ export default function AdminPage() {
         background: 'var(--bg-surface)',
       }}>
         <div>
-          <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '26px', display: 'block' }} />
+          <Image src="/avoca-logo.svg" alt="Avoca" width={105} height={26} style={{ display: 'block' }} />
           <span style={{
             marginLeft: '12px',
             fontSize: '12px',

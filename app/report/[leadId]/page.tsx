@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { leads } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import Image from 'next/image'
 import MapDisplay from '@/components/MapDisplay'
 import DemandScoreCard from '@/components/DemandScoreCard'
 import ForecastTimeline from '@/components/ForecastTimeline'
@@ -41,7 +42,7 @@ export default async function ReportPage({ params }: Props) {
         zIndex: 40,
       }}>
         <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
-          <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '26px', display: 'block' }} />
+          <Image src="/avoca-logo.svg" alt="Avoca" width={105} height={26} style={{ display: 'block' }} />
         </a>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
