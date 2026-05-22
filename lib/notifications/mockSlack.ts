@@ -78,6 +78,7 @@ export async function writeSlackNotification(params: {
   const routingContext = getRoutingContext(params.assignmentSource, aeName, params.website)
 
   const message = `@${aeFirstName} — New submission from the Demand Forecast page
+${routingContext}
 
 • Name: ${params.name}
 • Company: ${params.website ?? 'not provided'}
@@ -86,7 +87,6 @@ export async function writeSlackNotification(params: {
 
 ${demandContext}
 
-${routingContext}
 Reach out by ${outreachDate}.`
 
   await db.insert(notifications).values({
