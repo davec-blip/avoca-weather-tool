@@ -69,8 +69,10 @@ Write ONLY these two sections. No title, no header, no location line. Start dire
 Do not reference specific temperature thresholds, equipment failures, or percentages. Use soft directional language (e.g. "consider", "expect elevated", "quieter period").
 
 ## 14-Day Priorities
-Exactly 3 bullet points covering the full two-week window. Each bullet is one concrete operational action.
-No percentages, no dollar figures, no fluff. Start each bullet with a verb. Keep each to one sentence.`
+Exactly 3 bullet points covering the full two-week window. Each bullet must be under 10 words total.
+Start each bullet with a verb. Use **bold** on the 2–3 most critical words per bullet.
+Focus on demand timing and business preparation only: staffing, scheduling, capacity, outreach timing.
+Do not reference specific equipment types, failure modes, customer demographics, or dollar figures.`
 
     // Dynamic import so any SDK init error is caught by the try/catch above
     const { default: Anthropic } = await import('@anthropic-ai/sdk')

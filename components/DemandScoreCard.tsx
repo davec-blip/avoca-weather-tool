@@ -17,6 +17,7 @@ interface Props {
   heatStressDaysW1: number
   // W2 condition signals
   daysAbove90W2: number
+  noCard?: boolean
 }
 
 interface DemandLevel {
@@ -63,7 +64,7 @@ export default function DemandScoreCard(props: Props) {
     phaseW1, phaseW2, anomalyF, city, state,
     monthlyAvgHighF, monthlyAvgLowF,
     daysAbove90W1, hasFreezeRainW1, hasSnowW1, heatStressDaysW1,
-    daysAbove90W2,
+    daysAbove90W2, noCard,
   } = props
 
   const now = new Date()
@@ -79,17 +80,21 @@ export default function DemandScoreCard(props: Props) {
   const anomalyDir = anomalyF > 0 ? 'above' : 'below'
   const isSignificantAnomaly = Math.abs(anomalyF) >= 3
 
+  const outerStyle = noCard
+    ? { display: 'flex', flexDirection: 'column' as const, gap: '10px' }
+    : {
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: 'var(--radius-lg)',
+        padding: '16px',
+        boxShadow: 'var(--card-shadow)',
+        display: 'flex',
+        flexDirection: 'column' as const,
+        gap: '10px',
+      }
+
   return (
-    <div style={{
-      background: 'var(--bg-surface)',
-      border: '1px solid var(--border-subtle)',
-      borderRadius: 'var(--radius-lg)',
-      padding: '16px',
-      boxShadow: 'var(--card-shadow)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '10px',
-    }}>
+    <div style={outerStyle}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
         <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>

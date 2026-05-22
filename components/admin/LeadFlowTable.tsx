@@ -91,9 +91,8 @@ export default function LeadFlowTable() {
           >
             Refresh
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)' }} />
-            <span style={{ fontSize: '12px', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>Live</span>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+            Auto-refreshing
           </div>
         </div>
       </div>

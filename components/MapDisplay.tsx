@@ -76,6 +76,10 @@ export default function MapDisplay({ lat, lng, zip }: Props) {
             })
             if (!bounds.isEmpty()) {
               map.fitBounds(bounds, 24) // 24px padding
+              // Cap zoom so surrounding area is always visible
+              google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+                if ((map.getZoom() ?? 0) > 12) map.setZoom(12)
+              })
             }
             boundaryLoaded = true
           }

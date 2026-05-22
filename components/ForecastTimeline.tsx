@@ -145,19 +145,21 @@ export default function ForecastTimeline({ signals }: Props) {
             >
               {/* Weekday */}
               <div style={{
-                fontSize: '9px',
-                color: 'var(--text-muted)',
+                fontSize: '10px',
+                fontWeight: '700',
+                color: 'var(--text-secondary)',
                 fontFamily: 'var(--font-mono)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.03em',
-                marginBottom: '2px',
+                marginBottom: '1px',
               }}>
                 {day.weekday}
               </div>
 
               {/* Date */}
               <div style={{
-                fontSize: '9px',
+                fontSize: '10px',
+                fontWeight: '600',
                 color: 'var(--text-muted)',
                 fontFamily: 'var(--font-mono)',
                 marginBottom: '5px',
@@ -170,7 +172,7 @@ export default function ForecastTimeline({ signals }: Props) {
               {/* Condition */}
               {hasDailyData && (
                 <div style={{
-                  fontSize: '8px',
+                  fontSize: '9px',
                   color: 'var(--text-muted)',
                   marginBottom: '5px',
                   lineHeight: 1.2,
@@ -186,7 +188,7 @@ export default function ForecastTimeline({ signals }: Props) {
 
               {/* High temp */}
               <div style={{
-                fontSize: '11px',
+                fontSize: '14px',
                 fontWeight: '700',
                 color: tempColor,
                 fontFamily: 'var(--font-mono)',
@@ -197,7 +199,7 @@ export default function ForecastTimeline({ signals }: Props) {
 
               {/* Low temp */}
               <div style={{
-                fontSize: '10px',
+                fontSize: '12px',
                 color: 'var(--text-muted)',
                 fontFamily: 'var(--font-mono)',
               }}>
@@ -266,9 +268,9 @@ export default function ForecastTimeline({ signals }: Props) {
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>WINDOW</div>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>
-              {tooltip < 7 ? 'Week 1 — High Confidence' : 'Week 2 — Outlook'}
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>EXPECTED DEMAND</div>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: urgencyTextColor(days[tooltip].high, avgHigh) }}>
+              {days[tooltip].high - avgHigh >= 8 ? 'Peak' : days[tooltip].high - avgHigh >= 3 ? 'Elevated' : 'Typical'}
             </div>
           </div>
         </div>
