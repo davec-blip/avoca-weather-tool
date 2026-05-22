@@ -67,7 +67,10 @@ export interface WeatherSignals {
 }
 
 function isStormCode(code: number): boolean {
-  return (code >= 61 && code <= 82) || (code >= 95 && code <= 99)
+  // Heavy rain (65, 67), heavy snow (75, 77), showers/hail (80-82), thunderstorms (95-99)
+  // Excludes light/moderate rain (61-64, 66 drizzle) which doesn't drive HVAC demand spikes
+  return code === 65 || code === 67 || code === 75 || code === 77
+    || (code >= 80 && code <= 82) || (code >= 95 && code <= 99)
 }
 
 function isThunderstormCode(code: number): boolean {
