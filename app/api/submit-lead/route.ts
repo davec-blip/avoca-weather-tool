@@ -19,8 +19,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    // 1. Geocode
-    const geo = await geocodeZip(zip)
+    if (!/^\d{5}$/.test(zip)) {
+      return NextResponse.json({ error: 'Please enter a valid 5-digit US zip code' }, { status: 400 })
+    }
+
+    // 1. Geocode (throws with user-friendly message for invalid/non-US zips)
+    let geo: Awaited<ReturnType<typeof geocodeZip>>
+    try {
+      geo = await geocodeZip(zip)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Invalid zip code'
+      return NextResponse.json({ error: msg }, { status: 400 })
+    }
 
     // 2. Insert initial lead row
     const [lead] = await db.insert(leads).values({

@@ -27,13 +27,19 @@ export async function geocodeZip(zip: string): Promise<{
   state: string
   region: string
 }> {
+  // Validate format up front
+  if (!/^\d{5}$/.test(zip)) {
+    throw new Error(`Invalid zip code format: ${zip}`)
+  }
+
   const key = process.env.GOOGLE_MAPS_API_KEY
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${zip}&key=${key}`
+  // Use components filter to restrict to US postal codes only
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?components=postal_code:${zip}|country:US&key=${key}`
   const res = await fetch(url)
   const data = await res.json()
 
   if (data.status !== 'OK' || !data.results?.length) {
-    throw new Error(`Geocode failed for zip ${zip}: ${data.status}`)
+    throw new Error(`Zip code ${zip} not found in the US`)
   }
 
   const result = data.results[0]
@@ -42,13 +48,31 @@ export async function geocodeZip(zip: string): Promise<{
   const components: Array<{ types: string[]; long_name: string; short_name: string }> =
     result.address_components
 
-  const cityComp = components.find(
-    c => c.types.includes('locality') || c.types.includes('postal_town')
-  )
+  // Confirm result is in the US
+  const countryComp = components.find(c => c.types.includes('country'))
+  if (countryComp?.short_name !== 'US') {
+    throw new Error(`Zip code ${zip} is not a US zip code`)
+  }
+
   const stateComp = components.find(c => c.types.includes('administrative_area_level_1'))
+  const state = stateComp?.short_name ?? ''
+
+  // Validate state is a known US state
+  if (!state || !STATE_TO_REGION[state.toUpperCase()]) {
+    throw new Error(`Zip code ${zip} did not resolve to a valid US state`)
+  }
+
+  // City: try multiple component types — some zips (e.g. Beverly Hills 90210)
+  // return sublocality or neighborhood instead of locality
+  const cityComp =
+    components.find(c => c.types.includes('locality')) ??
+    components.find(c => c.types.includes('sublocality_level_1')) ??
+    components.find(c => c.types.includes('sublocality')) ??
+    components.find(c => c.types.includes('neighborhood')) ??
+    components.find(c => c.types.includes('postal_town')) ??
+    components.find(c => c.types.includes('administrative_area_level_2'))
 
   const city = cityComp?.long_name ?? ''
-  const state = stateComp?.short_name ?? ''
   const region = stateToRegion(state)
 
   return { lat, lng, city, state, region }
