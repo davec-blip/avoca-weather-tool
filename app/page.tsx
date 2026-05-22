@@ -34,16 +34,7 @@ export default function HomePage() {
         height: '60px',
         justifyContent: 'space-between',
       }}>
-        <span style={{
-          fontFamily: 'var(--font-display)',
-          fontWeight: 700,
-          fontSize: '22px',
-          color: 'var(--text-primary)',
-          letterSpacing: '0.02em',
-          textTransform: 'uppercase',
-        }}>
-          AVOCA <span style={{ color: 'var(--accent)' }}>INTELLIGENCE</span>
-        </span>
+        <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '28px', display: 'block' }} />
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <a href="/admin" style={{ color: 'var(--text-muted)', fontSize: '14px', textDecoration: 'none', fontWeight: '500' }}>
             Admin
@@ -270,9 +261,7 @@ export default function HomePage() {
         fontSize: '13px',
         background: 'var(--bg-surface)',
       }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
-          AVOCA <span style={{ color: 'var(--accent)' }}>INTELLIGENCE</span>
-        </span>
+        <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '22px', display: 'block', opacity: 0.7 }} />
         <span>Growth Engineer Case Study — Davison Chung</span>
       </footer>
     </main>

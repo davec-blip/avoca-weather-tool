@@ -12,15 +12,7 @@ export default function AdminPage() {
         background: 'var(--bg-surface)',
       }}>
         <div>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 700,
-            fontSize: '18px',
-            letterSpacing: '0.02em',
-            textTransform: 'uppercase',
-          }}>
-            AVOCA <span style={{ color: 'var(--accent)' }}>INTELLIGENCE</span>
-          </span>
+          <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '26px', display: 'block' }} />
           <span style={{
             marginLeft: '12px',
             fontSize: '12px',

@@ -40,17 +40,8 @@ export default async function ReportPage({ params }: Props) {
         top: 0,
         zIndex: 40,
       }}>
-        <a href="/" style={{ textDecoration: 'none' }}>
-          <span style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 700,
-            fontSize: '18px',
-            letterSpacing: '0.02em',
-            textTransform: 'uppercase',
-            color: 'var(--text-primary)',
-          }}>
-            AVOCA <span style={{ color: 'var(--accent)' }}>INTELLIGENCE</span>
-          </span>
+        <a href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+          <img src="/avoca-logo.svg" alt="Avoca" style={{ height: '26px', display: 'block' }} />
         </a>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
