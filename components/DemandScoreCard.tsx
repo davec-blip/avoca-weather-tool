@@ -69,20 +69,19 @@ export default function DemandScoreCard(props: Props) {
       background: 'var(--bg-surface)',
       border: '1px solid var(--border-subtle)',
       borderRadius: 'var(--radius-lg)',
-      padding: '24px',
+      padding: '16px',
       boxShadow: 'var(--card-shadow)',
-      height: '100%',
       display: 'flex',
       flexDirection: 'column',
-      gap: '20px',
+      gap: '10px',
     }}>
       {/* Header */}
-      <div>
-        <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '2px' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)' }}>
           {city}, {state}
         </div>
-        <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-          {month} {year} &nbsp;·&nbsp; 14-day demand outlook
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+          {month} {year}
         </div>
       </div>
 
@@ -90,93 +89,59 @@ export default function DemandScoreCard(props: Props) {
       <div style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: '8px',
-        padding: '10px 16px',
+        gap: '7px',
+        padding: '7px 12px',
         background: labelCfg.bg,
         border: `1px solid ${labelCfg.border}`,
         borderRadius: 'var(--radius-md)',
         alignSelf: 'flex-start',
       }}>
         {(phaseW1 === 'SURGE' || phaseW1 === 'BUILDING') && (
-          <span className="pulse-dot" style={{ width: '7px', height: '7px', borderRadius: '50%', background: labelCfg.color, flexShrink: 0 }} />
+          <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: labelCfg.color, flexShrink: 0 }} />
         )}
-        <span style={{
-          fontSize: '15px',
-          fontWeight: '700',
-          color: labelCfg.color,
-          letterSpacing: '0.01em',
-        }}>
+        <span style={{ fontSize: '14px', fontWeight: '700', color: labelCfg.color, letterSpacing: '0.01em' }}>
           {labelCfg.label}
         </span>
       </div>
 
-      {/* Temperature comparison */}
+      {/* Temperature — W1 and W2 on same line */}
       <div style={{
         background: 'var(--bg-elevated)',
         border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--radius-md)',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
+        padding: '10px 14px',
       }}>
-        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '2px' }}>
-          Temperature
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', alignItems: 'start' }}>
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>This week</div>
-            <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-primary)', fontFamily: 'var(--font-display)', letterSpacing: '-0.5px' }}>
-              {Math.round(week1HighF)}°F
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '3px' }}>Week 1</div>
+            <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-primary)', fontFamily: 'var(--font-display)', letterSpacing: '-0.3px' }}>
+              {Math.round(week1HighF)}°
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-              high &nbsp;/&nbsp; <span style={{ color: 'var(--text-secondary)' }}>{Math.round(week1LowF)}°F</span> low
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+              hi &nbsp;/&nbsp; {Math.round(week1LowF)}° lo
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>10-yr avg ({month})</div>
-            <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '-0.5px' }}>
-              {Math.round(monthlyAvgHighF)}°F
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '3px' }}>10-yr avg</div>
+            <div style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '-0.3px' }}>
+              {Math.round(monthlyAvgHighF)}°
             </div>
-            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-              high &nbsp;/&nbsp; {Math.round(monthlyAvgLowF)}°F low
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+              hi &nbsp;/&nbsp; {Math.round(monthlyAvgLowF)}° lo
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '3px' }}>Week 2</div>
+            <div style={{ fontSize: '12px', fontWeight: '500', color: 'var(--text-secondary)', lineHeight: 1.4, marginTop: '2px' }}>
+              {w2Summary}
             </div>
           </div>
         </div>
 
-        {isSignificantAnomaly && (
-          <div style={{
-            fontSize: '13px',
-            color: anomalyF > 0 ? '#D97706' : '#3774BA',
-            fontWeight: '500',
-            paddingTop: '6px',
-            borderTop: '1px solid var(--border-subtle)',
-          }}>
-            {anomalyAbs}°F {anomalyDir} the 10-year average for {month}
-          </div>
-        )}
-        {!isSignificantAnomaly && (
-          <div style={{ fontSize: '13px', color: 'var(--text-muted)', paddingTop: '6px', borderTop: '1px solid var(--border-subtle)' }}>
-            Near the 10-year average for {month}
-          </div>
-        )}
-      </div>
-
-      {/* Week 2 outlook */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        padding: '12px 16px',
-        background: 'var(--bg-elevated)',
-        border: '1px solid var(--border-subtle)',
-        borderRadius: 'var(--radius-md)',
-      }}>
-        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', flexShrink: 0 }}>
-          Week 2
-        </div>
-        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: '500' }}>
-          {w2Summary}
+        <div style={{ fontSize: '12px', color: isSignificantAnomaly ? (anomalyF > 0 ? '#D97706' : '#3774BA') : 'var(--text-muted)', fontWeight: isSignificantAnomaly ? '500' : '400', paddingTop: '8px', borderTop: '1px solid var(--border-subtle)', marginTop: '8px' }}>
+          {isSignificantAnomaly
+            ? `${anomalyAbs}°F ${anomalyDir} the 10-year average for ${month}`
+            : `Near the 10-year average for ${month}`}
         </div>
       </div>
     </div>

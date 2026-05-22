@@ -40,7 +40,7 @@ Tone: direct, operational, results-first. No fluff. Lead with what matters.
 Every claim is tied to a concrete action or revenue implication.
 Write like a Bloomberg terminal, not a weather app.`
 
-    const userPrompt = `Generate a Weather Demand Intelligence Report for an HVAC business in ${lead.city}, ${lead.state}.
+    const userPrompt = `Generate a demand forecast briefing for an HVAC business in ${lead.city}, ${lead.state}.
 
 MARKET CONTEXT:
 - Current date: ${today}
@@ -69,24 +69,15 @@ WEEK 2 SIGNALS (Days 8–14, outlook):
 PHASE COMBINATION: ${lead.phaseW1} → ${lead.phaseW2}
 Situation: ${lead.situationLabel}
 
-Write the report in these exact sections:
+Write ONLY these two sections. No title, no header, no location line. Start directly with the first section heading.
 
 ## What's Coming
-2–3 sentences. What the weather means for their call volume this week.
-Be specific about timing — not "it'll be hot" but "days 3–5 of this heat streak are when marginal units fail and emergency calls spike."
-
-## Call Mix to Expect
-Short list: call type | timing | avg ticket.
-Only include types triggered by the actual signals present.
-Use real revenue numbers from your training.
+2–3 sentences. What the weather pattern means for call volume this week and next.
+Be specific about timing and demand drivers. Do not predict equipment failures or units breaking down.
 
 ## This Week's Priority
-The single most important operational move given the phase combination.
-One paragraph. Concrete and specific to the situation label.
-
-## Revenue at Risk
-1–2 sentences. Quantify what missed calls in the key window cost.
-Make it tangible with a dollar range.`
+Exactly 3 bullet points. Each bullet is one concrete operational action given the phase combination.
+No fluff, no explanations of why — just the action. Start each with a verb.`
 
     // Dynamic import so any SDK init error is caught by the try/catch above
     const { default: Anthropic } = await import('@anthropic-ai/sdk')

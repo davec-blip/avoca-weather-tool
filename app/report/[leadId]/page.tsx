@@ -84,24 +84,27 @@ export default async function ReportPage({ params }: Props) {
             )}
           </div>
 
-          {/* Summary card */}
-          <DemandScoreCard
-            phaseW1={(lead.phaseW1 ?? 'CALM') as Phase}
-            phaseW2={(lead.phaseW2 ?? 'CALM') as Phase}
-            anomalyF={lead.anomalyF ?? 0}
-            city={lead.city ?? ''}
-            state={lead.state ?? ''}
-            monthlyAvgHighF={signals.monthlyAvgHighF}
-            monthlyAvgLowF={signals.monthlyAvgLowF}
-            week1HighF={signals.week1HighF}
-            week1LowF={signals.week1LowF}
-          />
+          {/* Right column: summary card + AI narrative */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', height: '100%', minHeight: 0 }}>
+            <DemandScoreCard
+              phaseW1={(lead.phaseW1 ?? 'CALM') as Phase}
+              phaseW2={(lead.phaseW2 ?? 'CALM') as Phase}
+              anomalyF={lead.anomalyF ?? 0}
+              city={lead.city ?? ''}
+              state={lead.state ?? ''}
+              monthlyAvgHighF={signals.monthlyAvgHighF}
+              monthlyAvgLowF={signals.monthlyAvgLowF}
+              week1HighF={signals.week1HighF}
+              week1LowF={signals.week1LowF}
+            />
+            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+              <NarrativePanel leadId={lead.id} />
+            </div>
+          </div>
         </div>
 
         {/* Bottom: full-width forecast + detail panels */}
         <ForecastTimeline signals={signals} />
-
-        <NarrativePanel leadId={lead.id} />
 
         <RecommendationCards
           phaseW1={(lead.phaseW1 ?? 'CALM') as Phase}
