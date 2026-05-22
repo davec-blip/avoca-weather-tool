@@ -9,7 +9,6 @@ import MapDisplay from '@/components/MapDisplay'
 import DemandScoreCard from '@/components/DemandScoreCard'
 import ForecastTimeline from '@/components/ForecastTimeline'
 import NarrativePanel from '@/components/NarrativePanel'
-import RecommendationCards from '@/components/RecommendationCards'
 import type { WeatherSignals } from '@/lib/weather/computeSignals'
 import type { Phase } from '@/lib/scoring/demandScore'
 
@@ -57,15 +56,16 @@ export default async function ReportPage({ params }: Props) {
       {/* Page content — single scrollable column */}
       <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '1400px', margin: '0 auto' }}>
 
-        {/* Top half: map (left) + summary (right) */}
+        {/* Top half: map (left) + summary + AI narrative (right) */}
         <div className="report-top-grid" style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '20px',
-          height: '460px',
+          alignItems: 'start',
         }}>
-          {/* Map */}
+          {/* Map — fixed height */}
           <div style={{
+            height: '460px',
             borderRadius: 'var(--radius-lg)',
             overflow: 'hidden',
             border: '1px solid var(--border-subtle)',
@@ -84,8 +84,8 @@ export default async function ReportPage({ params }: Props) {
             )}
           </div>
 
-          {/* Right column: summary card + AI narrative */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', height: '100%', minHeight: 0 }}>
+          {/* Right column: summary card + AI narrative — expands to content */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <DemandScoreCard
               phaseW1={(lead.phaseW1 ?? 'CALM') as Phase}
               phaseW2={(lead.phaseW2 ?? 'CALM') as Phase}
@@ -94,23 +94,18 @@ export default async function ReportPage({ params }: Props) {
               state={lead.state ?? ''}
               monthlyAvgHighF={signals.monthlyAvgHighF}
               monthlyAvgLowF={signals.monthlyAvgLowF}
-              week1HighF={signals.week1HighF}
-              week1LowF={signals.week1LowF}
+              daysAbove90W1={signals.daysAbove90W1}
+              hasFreezeRainW1={signals.hasFreezeRainW1}
+              hasSnowW1={signals.hasSnowW1}
+              heatStressDaysW1={signals.heatStressDaysW1}
+              daysAbove90W2={signals.daysAbove90W2}
             />
-            <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-              <NarrativePanel leadId={lead.id} />
-            </div>
+            <NarrativePanel leadId={lead.id} />
           </div>
         </div>
 
         {/* Bottom: full-width forecast + detail panels */}
         <ForecastTimeline signals={signals} />
-
-        <RecommendationCards
-          phaseW1={(lead.phaseW1 ?? 'CALM') as Phase}
-          phaseW2={(lead.phaseW2 ?? 'CALM') as Phase}
-          situationLabel={lead.situationLabel ?? ''}
-        />
 
         {/* Footer CTA */}
         <div style={{

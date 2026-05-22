@@ -45,39 +45,32 @@ Write like a Bloomberg terminal, not a weather app.`
 MARKET CONTEXT:
 - Current date: ${today}
 - 10-year average high for ${month}: ${signals.monthlyAvgHighF.toFixed(1)}°F
-- Temperature anomaly W1: ${anomalyLabel}
+- Temperature vs. seasonal average: ${anomalyLabel}
 
-WEEK 1 SIGNALS (Days 1–7, high confidence):
-- Demand Score: ${lead.demandScoreW1}/100
-- Phase: ${lead.phaseW1}
-- Days above 90°F: ${signals.daysAbove90W1}
-- Days above 95°F: ${signals.daysAbove95W1}
-- Consecutive hot days: ${signals.consecutiveHotDaysW1}
-- Storm days: ${signals.stormDaysW1}
-- Post-storm days: ${signals.postStormDaysW1}
-- Heat stress days (temp >88°F + humidity >60%): ${signals.heatStressDaysW1}
-- Peak heat index: ${signals.heatIndexPeakF.toFixed(1)}°F
-- Freeze rain: ${signals.hasFreezeRainW1}
-- Snow: ${signals.hasSnowW1}
+WEEK 1 CONDITIONS (Days 1–7):
+- Demand level: ${lead.phaseW1} (CALM = normal, BUILDING = rising, SURGE = high, POST_EVENT = elevated/recovery)
+- Above-average heat days: ${signals.daysAbove90W1}
+- Heat + humidity days: ${signals.heatStressDaysW1}
+- Consecutive warm days: ${signals.consecutiveHotDaysW1}
+- Winter weather: ${signals.hasSnowW1 ? 'snow expected' : signals.hasFreezeRainW1 ? 'freezing rain expected' : 'none'}
+- Weather event days: ${signals.stormDaysW1}
 
-WEEK 2 SIGNALS (Days 8–14, outlook):
-- Demand Score: ${lead.demandScoreW2}/100
-- Phase: ${lead.phaseW2}
-- Days above 90°F: ${signals.daysAbove90W2}
-- Storm days: ${signals.stormDaysW2}
+WEEK 2 CONDITIONS (Days 8–14):
+- Demand level: ${lead.phaseW2}
+- Above-average heat days: ${signals.daysAbove90W2}
+- Weather event days: ${signals.stormDaysW2}
 
-PHASE COMBINATION: ${lead.phaseW1} → ${lead.phaseW2}
-Situation: ${lead.situationLabel}
+OVERALL SITUATION: ${lead.situationLabel}
 
 Write ONLY these two sections. No title, no header, no location line. Start directly with the first section heading.
 
 ## What's Coming
-2–3 sentences. What the weather pattern means for call volume this week and next.
-Be specific about timing and demand drivers. Do not predict equipment failures or units breaking down.
+2–3 sentences covering the full 14-day period. Describe demand conditions and volume expectations for both weeks.
+Do not reference specific temperature thresholds, equipment failures, or percentages. Use soft directional language (e.g. "consider", "expect elevated", "quieter period").
 
-## This Week's Priority
-Exactly 3 bullet points. Each bullet is one concrete operational action given the phase combination.
-No fluff, no explanations of why — just the action. Start each with a verb.`
+## 14-Day Priorities
+Exactly 3 bullet points covering the full two-week window. Each bullet is one concrete operational action.
+No percentages, no dollar figures, no fluff. Start each bullet with a verb. Keep each to one sentence.`
 
     // Dynamic import so any SDK init error is caught by the try/catch above
     const { default: Anthropic } = await import('@anthropic-ai/sdk')

@@ -99,9 +99,7 @@ export default function NarrativePanel({ leadId }: Props) {
       borderRadius: 'var(--radius-lg)',
       padding: '16px 20px',
       boxShadow: 'var(--card-shadow)',
-      height: '100%',
-      boxSizing: 'border-box',
-    }}>
+          }}>
       {renderMarkdown(text)}
     </div>
   )
