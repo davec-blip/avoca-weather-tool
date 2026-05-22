@@ -146,9 +146,9 @@ export default function HomePage() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {[
-            { num: '01', label: 'Full 14-day forecast and comparison to historicals in your market' },
-            { num: '02', label: 'Estimated demand spikes' },
-            { num: '03', label: 'Recommended actions and staffing plan' },
+            { num: '01', label: '14-day forecast benchmarked against your market\'s 10-year average' },
+            { num: '02', label: 'Week-by-week demand outlook — Typical, Elevated, or Peak' },
+            { num: '03', label: 'Recommended priorities for your next two weeks' },
           ].map(item => (
             <div key={item.num} style={{
               display: 'flex',
