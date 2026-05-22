@@ -8,10 +8,12 @@ import type { WeatherSignals } from '@/lib/weather/computeSignals'
 // Extend Vercel serverless timeout — streaming requires more than the 10s default
 export const maxDuration = 60
 
-const client = new Anthropic()
-
 export async function POST(req: NextRequest) {
   try {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return new Response('ANTHROPIC_API_KEY is not set in Vercel environment variables', { status: 500, headers: { 'Content-Type': 'text/plain' } })
+    }
+    const client = new Anthropic()
     const { leadId } = await req.json()
     if (!leadId) return new Response('Missing leadId', { status: 400 })
 
