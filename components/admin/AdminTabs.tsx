@@ -6,11 +6,11 @@ import SlackFeed from './SlackFeed'
 import LeadFlowTable from './LeadFlowTable'
 import AEDirectory from './AEDirectory'
 
-const TABS = ['CRM', 'Slack', 'Lead Flow', 'AE Directory'] as const
+const TABS = ['AE Directory', 'CRM', 'Lead Flow', 'Slack'] as const
 type Tab = typeof TABS[number]
 
 export default function AdminTabs() {
-  const [active, setActive] = useState<Tab>('Lead Flow')
+  const [active, setActive] = useState<Tab>('CRM')
 
   return (
     <div>
