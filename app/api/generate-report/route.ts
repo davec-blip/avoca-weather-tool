@@ -1,4 +1,8 @@
 import { NextRequest } from 'next/server'
+
+// Extend Vercel serverless timeout to 60s — streaming Claude responses
+// requires more than the 10s default. Needs Vercel Pro or higher.
+export const maxDuration = 60
 import { db } from '@/lib/db'
 import { leads } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -24,7 +28,7 @@ export async function POST(req: NextRequest) {
   const anomalyAbs = Math.abs(signals.week1TempAnomalyF).toFixed(0)
   const anomalyLabel = Math.abs(signals.week1TempAnomalyF) < 3
     ? 'Near historical average'
-    : `${anomalyAbs}°F ${anomalyDir} the 30-year average for ${month} in this market`
+    : `${anomalyAbs}°F ${anomalyDir} the 10-year average for ${month} in this market`
 
   const systemPrompt = `You are the Avoca Weather Intelligence engine. You write demand forecast reports for HVAC business owners — operators who think in call volume, booking rates, and dispatch board capacity, not weather abstractions.
 
@@ -36,7 +40,7 @@ Write like a Bloomberg terminal, not a weather app.`
 
 MARKET CONTEXT:
 - Current date: ${today}
-- 30-year average high for ${month}: ${signals.monthlyAvgHighF.toFixed(1)}°F
+- 10-year average high for ${month}: ${signals.monthlyAvgHighF.toFixed(1)}°F
 - Temperature anomaly W1: ${anomalyLabel}
 
 WEEK 1 SIGNALS (Days 1–7, high confidence):
