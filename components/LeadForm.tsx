@@ -31,7 +31,7 @@ export default function LeadForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
         <div>
           <label style={labelStyle}>Your Name</label>
@@ -85,10 +85,10 @@ export default function LeadForm() {
       {error && (
         <div style={{
           padding: '10px 14px',
-          background: 'rgba(239,68,68,0.1)',
-          border: '1px solid rgba(239,68,68,0.3)',
+          background: 'rgba(220,38,38,0.06)',
+          border: '1px solid rgba(220,38,38,0.25)',
           borderRadius: 'var(--radius-sm)',
-          color: '#FCA5A5',
+          color: '#DC2626',
           fontSize: '14px',
         }}>
           {error}
@@ -100,10 +100,10 @@ export default function LeadForm() {
         disabled={loading}
         style={{
           background: loading ? 'var(--accent-hover)' : 'var(--accent)',
-          color: '#0A0A0A',
+          color: '#FFFFFF',
           border: 'none',
-          borderRadius: 'var(--radius-sm)',
-          padding: '14px 24px',
+          borderRadius: '4px',
+          padding: '13px 24px',
           fontSize: '15px',
           fontWeight: '600',
           cursor: loading ? 'not-allowed' : 'pointer',
@@ -130,11 +130,11 @@ export default function LeadForm() {
 
 const labelStyle: React.CSSProperties = {
   display: 'block',
-  fontSize: '12px',
-  fontWeight: '500',
-  color: 'var(--text-secondary)',
-  marginBottom: '6px',
-  letterSpacing: '0.04em',
+  fontSize: '11px',
+  fontWeight: '600',
+  color: 'var(--text-muted)',
+  marginBottom: '5px',
+  letterSpacing: '0.05em',
   textTransform: 'uppercase',
 }
 
@@ -143,8 +143,8 @@ const inputStyle: React.CSSProperties = {
   background: 'var(--bg-elevated)',
   border: '1px solid var(--border-subtle)',
   borderRadius: 'var(--radius-sm)',
-  padding: '10px 14px',
-  fontSize: '15px',
+  padding: '10px 12px',
+  fontSize: '14px',
   color: 'var(--text-primary)',
   outline: 'none',
   fontFamily: 'var(--font-body)',
@@ -153,8 +153,8 @@ const inputStyle: React.CSSProperties = {
 const spinnerStyle: React.CSSProperties = {
   width: '16px',
   height: '16px',
-  border: '2px solid rgba(0,0,0,0.2)',
-  borderTopColor: '#000',
+  border: '2px solid rgba(255,255,255,0.3)',
+  borderTopColor: '#fff',
   borderRadius: '50%',
   animation: 'spin 0.6s linear infinite',
 }

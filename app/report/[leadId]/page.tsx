@@ -30,27 +30,33 @@ export default async function ReportPage({ params }: Props) {
       {/* Header */}
       <div style={{
         borderBottom: '1px solid var(--border-subtle)',
-        background: 'rgba(10,10,10,0.9)',
-        padding: '16px 32px',
+        background: 'rgba(255,255,255,0.95)',
+        backdropFilter: 'blur(12px)',
+        padding: '14px 32px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
       }}>
-        <div>
+        <a href="/" style={{ textDecoration: 'none' }}>
           <span style={{
             fontFamily: 'var(--font-display)',
-            fontWeight: 800,
+            fontWeight: 700,
             fontSize: '18px',
-            letterSpacing: '-0.02em',
+            letterSpacing: '0.02em',
+            textTransform: 'uppercase',
+            color: 'var(--text-primary)',
           }}>
-            avoca <span style={{ color: 'var(--accent)' }}>intelligence</span>
+            AVOCA <span style={{ color: 'var(--accent)' }}>INTELLIGENCE</span>
           </span>
-        </div>
+        </a>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+          <div style={{ fontSize: '14px', color: 'var(--text-primary)', fontWeight: '500' }}>
             {lead.city}, {lead.state} — Zip {lead.zip}
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '1px' }}>
             {lead.name} · {new Date(lead.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </div>
         </div>
@@ -74,8 +80,15 @@ export default async function ReportPage({ params }: Props) {
           )}
         </div>
 
-        {/* Right: Data */}
-        <div style={{ overflowY: 'auto', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {/* Right: Data panel */}
+        <div style={{
+          overflowY: 'auto',
+          padding: '24px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px',
+          background: 'var(--bg-base)',
+        }}>
           <DemandScoreCard
             scoreW1={lead.demandScoreW1 ?? 0}
             scoreW2={lead.demandScoreW2 ?? 0}
@@ -100,13 +113,12 @@ export default async function ReportPage({ params }: Props) {
 
           {/* Footer CTA */}
           <div style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
+            background: 'var(--accent)',
             borderRadius: 'var(--radius-md)',
             padding: '24px',
             textAlign: 'center',
           }}>
-            <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+            <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.85)', marginBottom: '14px', fontWeight: '500' }}>
               See how Avoca handles your surge calls — AI that answers every call, books every job.
             </p>
             <a
@@ -115,16 +127,16 @@ export default async function ReportPage({ params }: Props) {
               rel="noopener noreferrer"
               style={{
                 display: 'inline-block',
-                background: 'var(--accent)',
-                color: '#0A0A0A',
-                padding: '12px 24px',
-                borderRadius: 'var(--radius-sm)',
-                fontWeight: '600',
-                fontSize: '15px',
+                background: '#FFFFFF',
+                color: 'var(--accent)',
+                padding: '11px 22px',
+                borderRadius: '4px',
+                fontWeight: '700',
+                fontSize: '14px',
                 textDecoration: 'none',
               }}
             >
-              See how Avoca handles your surge calls →
+              Book a Demo →
             </a>
           </div>
         </div>

@@ -33,17 +33,17 @@ function getDayScore(signals: WeatherSignals, dayIndex: number): number {
 }
 
 function scoreToColor(score: number): string {
-  if (score >= 76) return 'var(--accent)'
-  if (score >= 51) return 'var(--amber)'
-  if (score >= 26) return 'rgba(255,255,255,0.6)'
-  return 'var(--text-muted)'
+  if (score >= 76) return '#DC2626'
+  if (score >= 51) return '#D97706'
+  if (score >= 26) return '#3774BA'
+  return '#94A3B8'
 }
 
 function scoreToBackground(score: number): string {
-  if (score >= 76) return 'rgba(74,222,128,0.15)'
-  if (score >= 51) return 'rgba(251,191,36,0.12)'
-  if (score >= 26) return 'rgba(255,255,255,0.06)'
-  return 'rgba(255,255,255,0.02)'
+  if (score >= 76) return 'rgba(220,38,38,0.07)'
+  if (score >= 51) return 'rgba(245,158,11,0.08)'
+  if (score >= 26) return 'rgba(55,116,186,0.07)'
+  return '#F8FAFC'
 }
 
 function getDayHigh(signals: WeatherSignals, dayIndex: number): number {
@@ -74,27 +74,30 @@ export default function ForecastTimeline({ signals }: Props) {
       border: '1px solid var(--border-subtle)',
       borderRadius: 'var(--radius-lg)',
       padding: '24px',
+      boxShadow: 'var(--card-shadow)',
     }}>
       <div style={{
-        fontSize: '13px',
+        fontSize: '11px',
         color: 'var(--text-muted)',
         fontFamily: 'var(--font-mono)',
         marginBottom: '16px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        letterSpacing: '0.06em',
+        textTransform: 'uppercase',
       }}>
-        <span>14-DAY FORECAST</span>
-        <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>Click day for details</span>
+        <span>14-Day Forecast</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>Click day for details</span>
       </div>
 
       {/* Week labels */}
       <div style={{ display: 'flex', marginBottom: '6px' }}>
-        <div style={{ flex: 7, fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-          WEEK 1 — Days 1–7
+        <div style={{ flex: 7, fontSize: '10px', color: 'var(--accent)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          Week 1 — Days 1–7
         </div>
-        <div style={{ flex: 7, fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', paddingLeft: '4px' }}>
-          WEEK 2 — Days 8–14
+        <div style={{ flex: 7, fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', paddingLeft: '4px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          Week 2 — Days 8–14
         </div>
       </div>
 
@@ -106,21 +109,23 @@ export default function ForecastTimeline({ signals }: Props) {
             onClick={() => setTooltip(tooltip === day.index ? null : day.index)}
             style={{
               flex: 1,
-              background: scoreToBackground(day.score),
+              background: tooltip === day.index ? scoreToBackground(day.score) : scoreToBackground(day.score),
               border: `1px solid ${tooltip === day.index ? scoreToColor(day.score) : 'var(--border-subtle)'}`,
               borderRadius: 'var(--radius-sm)',
               padding: '8px 4px',
               textAlign: 'center',
               cursor: 'pointer',
-              transition: 'border-color 0.2s',
+              transition: 'border-color 0.15s, box-shadow 0.15s',
               position: 'relative',
+              boxShadow: tooltip === day.index ? `0 0 0 2px ${scoreToColor(day.score)}22` : 'none',
             }}
           >
             <div style={{
-              fontSize: '10px',
+              fontSize: '9px',
               color: 'var(--text-muted)',
               fontFamily: 'var(--font-mono)',
               marginBottom: '4px',
+              textTransform: 'uppercase',
             }}>
               {day.label}
             </div>
@@ -140,6 +145,7 @@ export default function ForecastTimeline({ signals }: Props) {
                 bottom: 0,
                 width: '2px',
                 background: 'var(--border-strong)',
+                borderRadius: '1px',
               }} />
             )}
           </div>
@@ -151,7 +157,8 @@ export default function ForecastTimeline({ signals }: Props) {
         <div style={{
           marginTop: '12px',
           background: 'var(--bg-elevated)',
-          border: `1px solid ${scoreToColor(days[tooltip].score)}`,
+          border: `1px solid ${scoreToColor(days[tooltip].score)}44`,
+          borderLeft: `3px solid ${scoreToColor(days[tooltip].score)}`,
           borderRadius: 'var(--radius-sm)',
           padding: '14px 16px',
           display: 'flex',
@@ -159,22 +166,22 @@ export default function ForecastTimeline({ signals }: Props) {
           flexWrap: 'wrap',
         }}>
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px' }}>DATE</div>
-            <div style={{ fontSize: '14px', fontWeight: '600' }}>Day {tooltip + 1} — {days[tooltip].date}</div>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DATE</div>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>Day {tooltip + 1} — {days[tooltip].date}</div>
           </div>
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px' }}>SCORE</div>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: scoreToColor(days[tooltip].score) }}>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>SCORE</div>
+            <div style={{ fontSize: '14px', fontWeight: '700', color: scoreToColor(days[tooltip].score) }}>
               {days[tooltip].score}/100
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px' }}>WEEK</div>
-            <div style={{ fontSize: '14px', fontWeight: '600' }}>{tooltip < 7 ? 'Week 1 (High Confidence)' : 'Week 2 (Outlook)'}</div>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>WINDOW</div>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>{tooltip < 7 ? 'Week 1 — High Confidence' : 'Week 2 — Outlook'}</div>
           </div>
           <div>
-            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px' }}>DRIVER</div>
-            <div style={{ fontSize: '14px', fontWeight: '600' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>DRIVER</div>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>
               {getPrimaryDriverLabel(signals, tooltip)}
             </div>
           </div>
@@ -184,14 +191,14 @@ export default function ForecastTimeline({ signals }: Props) {
       {/* Legend */}
       <div style={{ display: 'flex', gap: '16px', marginTop: '12px', flexWrap: 'wrap' }}>
         {[
-          { label: 'Critical Surge', color: 'var(--accent)', range: '76–100' },
-          { label: 'High Demand', color: 'var(--amber)', range: '51–75' },
-          { label: 'Moderate', color: 'rgba(255,255,255,0.6)', range: '26–50' },
-          { label: 'Low Pressure', color: 'var(--text-muted)', range: '0–25' },
+          { label: 'Critical Surge', color: '#DC2626', range: '76–100' },
+          { label: 'High Demand',    color: '#D97706', range: '51–75' },
+          { label: 'Moderate',       color: '#3774BA', range: '26–50' },
+          { label: 'Low Pressure',   color: '#94A3B8', range: '0–25' },
         ].map(l => (
-          <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: l.color }} />
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{l.label} ({l.range})</span>
+            <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{l.label} ({l.range})</span>
           </div>
         ))}
       </div>

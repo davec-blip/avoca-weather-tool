@@ -23,7 +23,7 @@ export default function NotFound() {
       <Link href="/" style={{
         display: 'inline-block',
         background: 'var(--accent)',
-        color: '#0A0A0A',
+        color: '#FFFFFF',
         padding: '12px 24px',
         borderRadius: 'var(--radius-sm)',
         fontWeight: '600',

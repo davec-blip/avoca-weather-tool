@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 const STATS = [
-  { value: 14, suffix: '-Day', label: 'Forecast Window', sub: 'Days 1–7 high confidence, Days 8–14 outlook' },
+  { value: 14, suffix: '-Day', label: 'Forecast Window', sub: 'Days 1–7 high confidence · Days 8–14 outlook' },
   { value: 30, suffix: '-Year', label: 'Climate Baseline', sub: 'Historical normals to compute true anomaly' },
   { value: 4, suffix: '', label: 'AEs on Standby', sub: 'Real-time routing — no lead sits unassigned' },
 ]
@@ -35,22 +35,24 @@ function StatCard({ value, suffix, label, sub, started }: typeof STATS[0] & { st
       borderRadius: 'var(--radius-md)',
       padding: '28px 24px',
       textAlign: 'center',
+      boxShadow: 'var(--card-shadow)',
     }}>
       <div style={{
         fontFamily: 'var(--font-display)',
         fontSize: '52px',
-        fontWeight: '800',
+        fontWeight: 700,
         color: 'var(--accent)',
         lineHeight: 1,
         marginBottom: '8px',
-        letterSpacing: '-0.02em',
+        letterSpacing: '-0.5px',
+        textTransform: 'uppercase',
       }}>
         {count}{suffix}
       </div>
-      <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>
+      <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>
         {label}
       </div>
-      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+      <div style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: 1.4, fontFamily: 'var(--font-mono)' }}>
         {sub}
       </div>
     </div>
@@ -72,13 +74,13 @@ export default function StatCounters() {
 
   return (
     <section ref={ref} style={{
-      padding: '80px 40px',
+      padding: '64px 40px',
       background: 'var(--bg-surface)',
       borderTop: '1px solid var(--border-subtle)',
       borderBottom: '1px solid var(--border-subtle)',
     }}>
-      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' }}>
           {STATS.map(s => <StatCard key={s.label} {...s} started={started} />)}
         </div>
       </div>

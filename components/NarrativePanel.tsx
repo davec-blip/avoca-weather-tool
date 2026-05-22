@@ -56,19 +56,16 @@ export default function NarrativePanel({ leadId }: Props) {
         border: '1px solid var(--border-subtle)',
         borderRadius: 'var(--radius-lg)',
         padding: '24px',
+        boxShadow: 'var(--card-shadow)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
           <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)' }} />
-          <span style={{ fontSize: '13px', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>
+          <span style={{ fontSize: '12px', color: 'var(--accent)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
             Generating demand report...
           </span>
         </div>
         {[80, 65, 90, 55, 75, 40].map((w, i) => (
-          <div key={i} className="skeleton" style={{
-            height: '14px',
-            width: `${w}%`,
-            marginBottom: '10px',
-          }} />
+          <div key={i} className="skeleton" style={{ height: '14px', width: `${w}%`, marginBottom: '10px' }} />
         ))}
       </div>
     )
@@ -78,11 +75,13 @@ export default function NarrativePanel({ leadId }: Props) {
     return (
       <div style={{
         background: 'var(--bg-surface)',
-        border: '1px solid rgba(239,68,68,0.3)',
+        border: '1px solid rgba(220,38,38,0.25)',
+        borderLeft: '3px solid #DC2626',
         borderRadius: 'var(--radius-lg)',
         padding: '24px',
-        color: '#FCA5A5',
+        color: '#DC2626',
         fontSize: '14px',
+        boxShadow: 'var(--card-shadow)',
       }}>
         {error}
       </div>
@@ -95,6 +94,7 @@ export default function NarrativePanel({ leadId }: Props) {
       border: '1px solid var(--border-subtle)',
       borderRadius: 'var(--radius-lg)',
       padding: '24px',
+      boxShadow: 'var(--card-shadow)',
     }}>
       <div style={{
         fontSize: '11px',
@@ -102,13 +102,14 @@ export default function NarrativePanel({ leadId }: Props) {
         fontFamily: 'var(--font-mono)',
         marginBottom: '16px',
         letterSpacing: '0.06em',
+        textTransform: 'uppercase',
       }}>
-        DEMAND INTELLIGENCE REPORT — AI GENERATED
+        Demand Intelligence Report — AI Generated
       </div>
       <div style={{
         fontSize: '15px',
         lineHeight: 1.7,
-        color: 'var(--text-primary)',
+        color: 'var(--text-secondary)',
         whiteSpace: 'pre-wrap',
       }}>
         {renderMarkdown(text)}
@@ -124,12 +125,15 @@ function renderMarkdown(text: string) {
       return (
         <div key={i} style={{
           fontFamily: 'var(--font-display)',
-          fontWeight: '700',
-          fontSize: '17px',
-          color: 'var(--accent)',
-          marginTop: '20px',
+          fontWeight: 700,
+          fontSize: '18px',
+          color: 'var(--text-primary)',
+          marginTop: '24px',
           marginBottom: '8px',
-          letterSpacing: '-0.01em',
+          letterSpacing: '-0.2px',
+          textTransform: 'uppercase',
+          borderBottom: '1px solid var(--border-subtle)',
+          paddingBottom: '6px',
         }}>
           {line.replace('## ', '')}
         </div>
@@ -137,9 +141,9 @@ function renderMarkdown(text: string) {
     }
     if (line.startsWith('- ')) {
       return (
-        <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '6px' }}>
-          <span style={{ color: 'var(--accent)', flexShrink: 0, marginTop: '2px' }}>›</span>
-          <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{line.replace('- ', '')}</span>
+        <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '6px', alignItems: 'flex-start' }}>
+          <span style={{ color: 'var(--accent)', flexShrink: 0, marginTop: '3px', fontWeight: '700', fontSize: '12px' }}>›</span>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6 }}>{line.replace('- ', '')}</span>
         </div>
       )
     }

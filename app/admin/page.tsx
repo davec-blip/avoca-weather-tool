@@ -14,11 +14,12 @@ export default function AdminPage() {
         <div>
           <span style={{
             fontFamily: 'var(--font-display)',
-            fontWeight: 800,
+            fontWeight: 700,
             fontSize: '18px',
-            letterSpacing: '-0.02em',
+            letterSpacing: '0.02em',
+            textTransform: 'uppercase',
           }}>
-            avoca <span style={{ color: 'var(--accent)' }}>intelligence</span>
+            AVOCA <span style={{ color: 'var(--accent)' }}>INTELLIGENCE</span>
           </span>
           <span style={{
             marginLeft: '12px',
