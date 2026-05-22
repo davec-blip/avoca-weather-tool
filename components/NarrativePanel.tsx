@@ -18,29 +18,53 @@ export default function NarrativePanel({ leadId }: Props) {
 
     async function stream() {
       try {
-        const res = await fetch('/api/generate-report', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ leadId }),
-          signal: controller.signal,
-        })
+        let res: Response
+        try {
+          res = await fetch('/api/generate-report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ leadId }),
+            signal: controller.signal,
+          })
+        } catch (fetchErr) {
+          if ((fetchErr as Error).name === 'AbortError') return
+          setError(`Network error — could not reach the report API. (${(fetchErr as Error).message})`)
+          setLoading(false)
+          return
+        }
 
-        if (!res.ok) throw new Error('Report generation failed')
-        if (!res.body) throw new Error('No response body')
+        if (!res.ok) {
+          let body = ''
+          try { body = await res.text() } catch {}
+          setError(`API error ${res.status} ${res.statusText}${body ? `: ${body}` : ''}`)
+          setLoading(false)
+          return
+        }
+
+        if (!res.body) {
+          setError('API returned no response body (status 200 but empty).')
+          setLoading(false)
+          return
+        }
 
         setLoading(false)
         const reader = res.body.getReader()
         const decoder = new TextDecoder()
 
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          const chunk = decoder.decode(value, { stream: true })
-          setText(prev => prev + chunk)
+        try {
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            const chunk = decoder.decode(value, { stream: true })
+            setText(prev => prev + chunk)
+          }
+        } catch (streamErr) {
+          if ((streamErr as Error).name === 'AbortError') return
+          setError(`Stream interrupted mid-response. (${(streamErr as Error).message})`)
         }
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError('Could not generate report. Please refresh to try again.')
+        setError(`Unexpected error: ${(err as Error).message}`)
         setLoading(false)
       }
     }
@@ -79,11 +103,14 @@ export default function NarrativePanel({ leadId }: Props) {
         borderLeft: '3px solid #DC2626',
         borderRadius: 'var(--radius-lg)',
         padding: '24px',
-        color: '#DC2626',
-        fontSize: '14px',
         boxShadow: 'var(--card-shadow)',
       }}>
-        {error}
+        <div style={{ fontSize: '11px', color: '#DC2626', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '8px' }}>
+          Report Generation Failed
+        </div>
+        <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+          {error}
+        </div>
       </div>
     )
   }
