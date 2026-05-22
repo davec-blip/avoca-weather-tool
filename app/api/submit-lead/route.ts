@@ -68,8 +68,18 @@ export async function POST(req: NextRequest) {
       })
       .where(eq(leads.id, lead.id))
 
-    // 8. Write Slack notification
-    await writeSlackNotification({
+    // 8. Return immediately — notification is fire-and-forget so it can
+    //    never block or kill the submission response
+    const response = NextResponse.json({
+      leadId: lead.id,
+      city: geo.city,
+      state: geo.state,
+      demandScoreW1,
+      phaseW1,
+    })
+
+    // 9. Write Slack notification after response is ready
+    writeSlackNotification({
       leadId: lead.id, aeId, assignmentSource,
       name, website, email, zip,
       city: geo.city, state: geo.state, region: geo.region,
@@ -77,16 +87,9 @@ export async function POST(req: NextRequest) {
       phaseW1, phaseW2,
       anomalyLabel, situationLabel,
       signals,
-    })
+    }).catch(err => console.error('Slack notification failed:', err))
 
-    // 9. Return
-    return NextResponse.json({
-      leadId: lead.id,
-      city: geo.city,
-      state: geo.state,
-      demandScoreW1,
-      phaseW1,
-    })
+    return response
   } catch (err) {
     console.error('submit-lead error:', err)
     return NextResponse.json(
