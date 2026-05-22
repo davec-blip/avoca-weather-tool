@@ -62,8 +62,9 @@ export default function SlackFeed() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {notes.map(n => (
           <div key={n.id} style={{
-            background: '#1A1A1A',
+            background: 'var(--bg-surface)',
             border: '1px solid var(--border-subtle)',
+            borderLeft: '3px solid var(--accent)',
             borderRadius: 'var(--radius-md)',
             padding: '16px 20px',
           }}>
@@ -78,17 +79,21 @@ export default function SlackFeed() {
                   width: '32px', height: '32px',
                   borderRadius: '8px',
                   background: 'var(--accent-subtle)',
+                  border: '1px solid var(--accent-border)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '14px',
+                  fontSize: '13px',
+                  fontWeight: '700',
+                  color: 'var(--accent)',
+                  fontFamily: 'var(--font-mono)',
                 }}>
-                  ⚡
+                  #
                 </div>
                 <div>
-                  <div style={{ fontSize: '14px', fontWeight: '600' }}>Avoca Intelligence</div>
+                  <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-primary)' }}>Avoca Intelligence</div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    {n.ae?.name ?? 'Unassigned'} · {n.ae?.region ?? ''}
+                    {n.ae ? n.ae.name.split(' ')[0] : 'Unassigned'}{n.ae?.region ? ` · ${n.ae.region}` : ''}
                   </div>
                 </div>
               </div>
@@ -106,6 +111,10 @@ export default function SlackFeed() {
               whiteSpace: 'pre-wrap',
               lineHeight: 1.6,
               margin: 0,
+              padding: '12px 14px',
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: 'var(--radius-sm)',
             }}>
               {n.message}
             </pre>

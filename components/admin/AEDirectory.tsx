@@ -9,13 +9,6 @@ interface AE {
   leadCount: number
 }
 
-const REGION_COLORS: Record<string, string> = {
-  Northeast: 'var(--accent)',
-  Southeast: 'var(--amber)',
-  Midwest: '#818CF8',
-  West: '#38BDF8',
-}
-
 export default function AEDirectory() {
   const [aes, setAes] = useState<AE[]>([])
   const [loading, setLoading] = useState(true)
@@ -27,11 +20,7 @@ export default function AEDirectory() {
       .catch(() => setLoading(false))
   }, [])
 
-  if (loading) return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
-      {[1, 2, 3, 4].map(i => <div key={i} className="skeleton" style={{ height: '120px', borderRadius: 'var(--radius-md)' }} />)}
-    </div>
-  )
+  if (loading) return <div className="skeleton" style={{ height: '200px', borderRadius: 'var(--radius-md)' }} />
 
   return (
     <div>
@@ -40,61 +29,54 @@ export default function AEDirectory() {
         <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '2px' }}>Live lead counts from submissions</div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
-        {aes.map(ae => (
-          <div key={ae.id} style={{
-            background: 'var(--bg-surface)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: 'var(--radius-md)',
-            padding: '20px',
-          }}>
-            <div style={{
-              width: '40px', height: '40px',
-              borderRadius: '10px',
-              background: `${REGION_COLORS[ae.region] ?? 'var(--accent)'}20`,
-              border: `1px solid ${REGION_COLORS[ae.region] ?? 'var(--accent)'}40`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '12px',
-              fontSize: '16px',
-              fontWeight: '700',
-              color: REGION_COLORS[ae.region] ?? 'var(--accent)',
-              fontFamily: 'var(--font-display)',
-            }}>
-              {ae.name.split(' ').map(n => n[0]).join('')}
-            </div>
-            <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '4px' }}>{ae.name}</div>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginTop: '12px',
-            }}>
-              <span style={{
-                fontSize: '12px',
-                color: REGION_COLORS[ae.region] ?? 'var(--accent)',
-                fontFamily: 'var(--font-mono)',
-                fontWeight: '500',
-              }}>
-                {ae.region}
-              </span>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '28px',
-                  fontWeight: '800',
-                  color: ae.leadCount > 0 ? 'var(--accent)' : 'var(--text-muted)',
-                  lineHeight: 1,
-                }}>
+      <div style={{
+        background: 'var(--bg-surface)',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: 'var(--radius-md)',
+        overflow: 'hidden',
+      }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+              {['Name', 'Region', 'Leads'].map(h => (
+                <th key={h} style={thStyle}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {aes.map((ae, i) => (
+              <tr key={ae.id} style={{ borderBottom: i < aes.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
+                <td style={tdStyle}>{ae.name.split(' ')[0]}</td>
+                <td style={{ ...tdStyle, fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  {ae.region}
+                </td>
+                <td style={{ ...tdStyle, fontFamily: 'var(--font-mono)', fontWeight: '700', color: ae.leadCount > 0 ? 'var(--accent)' : 'var(--text-muted)' }}>
                   {ae.leadCount}
-                </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>leads</div>
-              </div>
-            </div>
-          </div>
-        ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
+}
+
+const thStyle: React.CSSProperties = {
+  padding: '12px 16px',
+  textAlign: 'left',
+  fontSize: '11px',
+  fontWeight: '600',
+  color: 'var(--text-muted)',
+  fontFamily: 'var(--font-mono)',
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
+  whiteSpace: 'nowrap',
+}
+
+const tdStyle: React.CSSProperties = {
+  padding: '12px 16px',
+  fontSize: '14px',
+  color: 'var(--text-primary)',
+  whiteSpace: 'nowrap',
 }

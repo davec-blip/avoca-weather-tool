@@ -1,26 +1,9 @@
 import Image from 'next/image'
 import LeadForm from '@/components/LeadForm'
-import StatCounters from '@/components/StatCounters'
 
 export default function HomePage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg-base)' }}>
-      {/* Announcement bar */}
-      <div style={{
-        background: 'var(--accent)',
-        color: '#FFFFFF',
-        textAlign: 'center',
-        padding: '10px 24px',
-        fontSize: '13px',
-        fontWeight: '500',
-      }}>
-        Built for Avoca AI — Growth Engineer Case Study &nbsp;·&nbsp;
-        <a href="https://avoca.ai" target="_blank" rel="noopener noreferrer"
-          style={{ color: '#FFFFFF', textDecoration: 'underline', fontWeight: '600' }}>
-          avoca.ai →
-        </a>
-      </div>
-
       {/* Nav */}
       <nav style={{
         position: 'sticky',
@@ -93,17 +76,17 @@ export default function HomePage() {
             <div>
               <h1 style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(52px, 5.5vw, 80px)',
+                fontSize: 'clamp(42px, 4.8vw, 68px)',
                 fontWeight: 700,
-                lineHeight: 1.0,
+                lineHeight: 1.05,
                 letterSpacing: '-0.5px',
                 color: 'var(--text-primary)',
                 marginBottom: '20px',
                 textTransform: 'uppercase',
               }}>
-                KNOW YOUR<br />
-                BUSY SEASON<br />
-                <span style={{ color: 'var(--accent)' }}>BEFORE IT HITS.</span>
+                FREE 14-DAY<br />
+                WEATHER DEMAND<br />
+                <span style={{ color: 'var(--accent)' }}>FORECAST.</span>
               </h1>
 
               <p style={{
@@ -114,8 +97,7 @@ export default function HomePage() {
                 marginBottom: '0',
                 fontWeight: '400',
               }}>
-                Enter your zip code and get a 14-day weather demand forecast for your HVAC market —
-                call mix predictions, surge timing, and actions that drive revenue.
+                Enter your zip code and get a 14-day demand forecast for your HVAC business based on upcoming weather events.
               </p>
             </div>
 
@@ -144,69 +126,52 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats */}
-      <StatCounters />
-
       {/* What you get */}
       <section style={{
         padding: '80px 40px',
         maxWidth: '1000px',
         margin: '0 auto',
       }}>
-        <div style={{ marginBottom: '40px' }}>
-          <div style={{
-            fontSize: '11px',
-            fontFamily: 'var(--font-mono)',
-            color: 'var(--accent)',
-            fontWeight: '600',
-            letterSpacing: '0.08em',
-            marginBottom: '10px',
-          }}>
-            WHAT&apos;S IN THE REPORT
-          </div>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '40px',
-            fontWeight: 700,
-            letterSpacing: '-0.3px',
-            color: 'var(--text-primary)',
-            textTransform: 'uppercase',
-            marginBottom: '8px',
-          }}>
-            Built for operators, not analysts.
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '16px', maxWidth: '500px' }}>
-            Calibrated to your specific market — not generic weather data.
-          </p>
-        </div>
+        <h2 style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: '40px',
+          fontWeight: 700,
+          letterSpacing: '-0.3px',
+          color: 'var(--text-primary)',
+          textTransform: 'uppercase',
+          marginBottom: '32px',
+        }}>
+          What you get in your report
+        </h2>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {[
-            { num: '01', label: 'Demand Score', desc: '0–100 composite score from temperature, anomaly, storms, and humidity signals.' },
-            { num: '02', label: 'Phase Classification', desc: 'CALM → BUILDING → SURGE → POST_EVENT. Drives your recommended posture this week.' },
-            { num: '03', label: 'Call Mix Forecast', desc: 'What call types to expect, when they peak, and avg ticket value per type.' },
-            { num: '04', label: 'Revenue at Risk', desc: 'Quantified — missed calls during the key window, in dollar ranges.' },
+            { num: '01', label: 'Full 14-day forecast and comparison to historicals in your market' },
+            { num: '02', label: 'Estimated demand spikes' },
+            { num: '03', label: 'Recommended actions and staffing plan' },
           ].map(item => (
-            <div key={item.label} style={{
+            <div key={item.num} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '20px',
               background: 'var(--bg-surface)',
               border: '1px solid var(--border-subtle)',
-              borderTop: '2px solid var(--accent)',
+              borderLeft: '3px solid var(--accent)',
               borderRadius: 'var(--radius-md)',
-              padding: '20px',
+              padding: '20px 24px',
               boxShadow: 'var(--card-shadow)',
             }}>
-              <div style={{
+              <span style={{
                 fontSize: '11px',
                 fontFamily: 'var(--font-mono)',
                 color: 'var(--accent)',
                 fontWeight: '600',
-                marginBottom: '10px',
                 letterSpacing: '0.06em',
+                flexShrink: 0,
               }}>
                 {item.num} /
-              </div>
-              <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '6px', color: 'var(--text-primary)' }}>{item.label}</div>
-              <div style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.5 }}>{item.desc}</div>
+              </span>
+              <span style={{ fontSize: '16px', fontWeight: '500', color: 'var(--text-primary)' }}>{item.label}</span>
             </div>
           ))}
         </div>
@@ -227,10 +192,10 @@ export default function HomePage() {
           textTransform: 'uppercase',
           letterSpacing: '-0.3px',
         }}>
-          See how Avoca handles your surge calls.
+          Want a Front Office that never sleeps?
         </h2>
-        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '16px', marginBottom: '28px' }}>
-          AI that answers every call, books every job — even at 2am during a heat surge.
+        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '16px', marginBottom: '28px', maxWidth: '560px', margin: '0 auto 28px' }}>
+          Always-on agents that answer every call, fill every board, and keep your team focused on the work that matters.
         </p>
         <a
           href="https://avoca.ai/demo"

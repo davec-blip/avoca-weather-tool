@@ -81,7 +81,7 @@ export default function LeadFlowTable() {
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              {['Name', 'Website', 'Location', 'Score W1', 'Phase', 'Assigned AE', 'Source', 'Submitted'].map(h => (
+              {['Submitted', 'Name', 'Website', 'Location', 'Score W1', 'Phase', 'Assigned AE', 'Source'].map(h => (
                 <th key={h} style={thStyle}>{h}</th>
               ))}
             </tr>
@@ -91,6 +91,12 @@ export default function LeadFlowTable() {
               const sourceInfo = SOURCE_COLORS[lead.assignmentSource ?? ''] ?? SOURCE_COLORS.FALLBACK
               return (
                 <tr key={lead.id} style={{ borderBottom: i < leads.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
+                  <td style={{ ...tdStyle, fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                    {new Date(lead.createdAt).toLocaleString('en-US', {
+                      month: 'short', day: 'numeric',
+                      hour: 'numeric', minute: '2-digit',
+                    })}
+                  </td>
                   <td style={tdStyle}>{lead.name}</td>
                   <td style={{ ...tdStyle, fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--text-secondary)' }}>
                     {lead.website ?? '—'}
@@ -118,7 +124,7 @@ export default function LeadFlowTable() {
                       {lead.phaseW1 ?? '—'}
                     </span>
                   </td>
-                  <td style={tdStyle}>{lead.ae?.name ?? '—'}</td>
+                  <td style={tdStyle}>{lead.ae ? lead.ae.name.split(' ')[0] : '—'}</td>
                   <td style={tdStyle}>
                     <span style={{
                       display: 'inline-block',
@@ -132,12 +138,6 @@ export default function LeadFlowTable() {
                     }}>
                       {sourceInfo.label}
                     </span>
-                  </td>
-                  <td style={{ ...tdStyle, fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                    {new Date(lead.createdAt).toLocaleString('en-US', {
-                      month: 'short', day: 'numeric',
-                      hour: 'numeric', minute: '2-digit',
-                    })}
                   </td>
                 </tr>
               )
