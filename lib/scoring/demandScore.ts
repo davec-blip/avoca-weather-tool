@@ -126,5 +126,5 @@ export function formatAnomalyLabel(anomalyF: number, month: string): string {
   if (Math.abs(anomalyF) < 3) return 'Near historical average'
   const dir = anomalyF > 0 ? 'above' : 'below'
   const abs = Math.abs(anomalyF).toFixed(0)
-  return `${abs}°F ${dir} the 30-year average for ${month} in this market`
+  return `${abs}°F ${dir} the 10-year average for ${month} in this market`
 }

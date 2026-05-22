@@ -2,6 +2,12 @@ import type { ForecastData } from './fetchForecast'
 import type { ClimateData } from './fetchClimateNormals'
 
 export interface WeatherSignals {
+  // Per-day forecast arrays (14 days) — stored so the UI can show actual daily data
+  dailyHighsF?: number[]
+  dailyLowsF?: number[]
+  dailyCodes?: number[]
+  dailyDates?: string[]
+
   // Temperature — Week 1
   week1HighF: number
   week1LowF: number
@@ -243,6 +249,11 @@ export function computeSignals(
     : 50
 
   return {
+    dailyHighsF: daily.temperature_2m_max.slice(0, 14),
+    dailyLowsF: daily.temperature_2m_min.slice(0, 14),
+    dailyCodes: daily.weathercode.slice(0, 14),
+    dailyDates: daily.time.slice(0, 14),
+
     week1HighF,
     week1LowF,
     daysAbove90W1,

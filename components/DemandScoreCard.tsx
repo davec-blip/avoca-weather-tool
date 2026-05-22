@@ -1,180 +1,182 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import type { Phase } from '@/lib/scoring/demandScore'
 
 interface Props {
-  scoreW1: number
-  scoreW2: number
   phaseW1: Phase
   phaseW2: Phase
   anomalyF: number
-  situationLabel: string
   city: string
   state: string
   monthlyAvgHighF: number
+  monthlyAvgLowF: number
+  week1HighF: number
+  week1LowF: number
 }
 
-const PHASE_COLORS: Record<Phase, { bg: string; text: string; border: string }> = {
-  CALM:       { bg: '#F1F5F9',                      text: '#64748B',  border: '#E2EAF5' },
-  BUILDING:   { bg: 'rgba(55, 116, 186, 0.08)',     text: '#3774BA',  border: 'rgba(55, 116, 186, 0.25)' },
-  SURGE:      { bg: 'rgba(245, 158, 11, 0.10)',     text: '#D97706',  border: 'rgba(245, 158, 11, 0.30)' },
-  POST_EVENT: { bg: 'rgba(55, 116, 186, 0.12)',     text: '#2D5FA0',  border: 'rgba(55, 116, 186, 0.30)' },
+interface LabelConfig {
+  label: string
+  color: string
+  bg: string
+  border: string
 }
 
-function scoreColor(score: number): string {
-  if (score >= 76) return '#DC2626'   // critical — red
-  if (score >= 51) return '#D97706'   // high — amber
-  if (score >= 26) return '#3774BA'   // moderate — blue
-  return '#94A3B8'                     // low — muted
+function getDemandLabel(phaseW1: Phase, phaseW2: Phase): LabelConfig {
+  if (phaseW1 === 'SURGE' && phaseW2 === 'SURGE') {
+    return { label: 'Sustained Surge', color: '#DC2626', bg: 'rgba(220,38,38,0.07)', border: 'rgba(220,38,38,0.25)' }
+  }
+  if (phaseW1 === 'SURGE') {
+    return { label: 'Surge Expected', color: '#DC2626', bg: 'rgba(220,38,38,0.07)', border: 'rgba(220,38,38,0.25)' }
+  }
+  if (phaseW1 === 'POST_EVENT') {
+    return { label: 'Post-Storm Recovery', color: '#3774BA', bg: 'rgba(55,116,186,0.08)', border: 'rgba(55,116,186,0.25)' }
+  }
+  if (phaseW1 === 'BUILDING' && phaseW2 === 'SURGE') {
+    return { label: 'Surge Incoming', color: '#D97706', bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.25)' }
+  }
+  if (phaseW1 === 'BUILDING') {
+    return { label: 'Busy Week Ahead', color: '#D97706', bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.25)' }
+  }
+  return { label: 'Normal Week', color: '#64748B', bg: '#F1F5F9', border: '#E2EAF5' }
 }
 
-function useCountUp(target: number, duration = 1200) {
-  const [count, setCount] = useState(0)
-  useEffect(() => {
-    let start: number | null = null
-    const step = (ts: number) => {
-      if (!start) start = ts
-      const progress = Math.min((ts - start) / duration, 1)
-      setCount(Math.round(progress * target))
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  }, [target, duration])
-  return count
-}
-
-function PhaseBadge({ phase }: { phase: Phase }) {
-  const c = PHASE_COLORS[phase]
-  return (
-    <span style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: '5px',
-      padding: '4px 10px',
-      background: c.bg,
-      border: `1px solid ${c.border}`,
-      borderRadius: '100px',
-      color: c.text,
-      fontSize: '11px',
-      fontWeight: '600',
-      letterSpacing: '0.06em',
-      textTransform: 'uppercase',
-      fontFamily: 'var(--font-mono)',
-    }}>
-      {(phase === 'SURGE' || phase === 'POST_EVENT') ? (
-        <span className="pulse-dot" style={{ width: '5px', height: '5px', borderRadius: '50%', background: c.text, flexShrink: 0 }} />
-      ) : null}
-      {phase.replace('_', ' ')}
-    </span>
-  )
+function getW2Summary(phaseW1: Phase, phaseW2: Phase): string {
+  if (phaseW2 === 'SURGE' && phaseW1 !== 'SURGE') return 'Demand surging in week 2'
+  if (phaseW2 === 'SURGE' && phaseW1 === 'SURGE') return 'Surge continues into week 2'
+  if (phaseW2 === 'BUILDING' && phaseW1 === 'CALM') return 'Demand building week 2'
+  if (phaseW2 === 'CALM' && phaseW1 === 'SURGE') return 'Demand drops off week 2'
+  if (phaseW2 === 'CALM' && phaseW1 === 'BUILDING') return 'Quieter heading into week 2'
+  if (phaseW2 === 'POST_EVENT') return 'Storm recovery continuing week 2'
+  return 'Similar conditions expected week 2'
 }
 
 export default function DemandScoreCard(props: Props) {
-  const { scoreW1, scoreW2, phaseW1, phaseW2, anomalyF, situationLabel, city, state, monthlyAvgHighF } = props
-  const displayScore = useCountUp(scoreW1)
+  const { phaseW1, phaseW2, anomalyF, city, state, monthlyAvgHighF, monthlyAvgLowF, week1HighF, week1LowF } = props
 
-  const anomalyDir = anomalyF > 0 ? 'above' : 'below'
-  const anomalyAbs = Math.abs(anomalyF).toFixed(1)
   const now = new Date()
   const month = now.toLocaleString('en-US', { month: 'long' })
-  const anomalyLabel = Math.abs(anomalyF) < 3
-    ? 'Near historical average'
-    : `${anomalyAbs}°F ${anomalyDir} the 30-year avg for ${month}`
+  const year = now.getFullYear()
 
-  const scoreLabel = scoreW1 >= 76 ? 'Critical Surge' : scoreW1 >= 51 ? 'High Demand' : scoreW1 >= 26 ? 'Moderate' : 'Low Pressure'
+  const labelCfg = getDemandLabel(phaseW1, phaseW2)
+  const w2Summary = getW2Summary(phaseW1, phaseW2)
+
+  const anomalyDir = anomalyF > 0 ? 'above' : 'below'
+  const anomalyAbs = Math.abs(anomalyF).toFixed(0)
+  const isSignificantAnomaly = Math.abs(anomalyF) >= 3
 
   return (
     <div style={{
       background: 'var(--bg-surface)',
       border: '1px solid var(--border-subtle)',
       borderRadius: 'var(--radius-lg)',
-      padding: '28px',
+      padding: '24px',
       boxShadow: 'var(--card-shadow)',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '20px',
     }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-        <div>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '3px', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-            Week 1 Demand Score
-          </div>
-          <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: '500' }}>
-            {city}, {state}
-          </div>
+      {/* Header */}
+      <div>
+        <div style={{ fontSize: '18px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '2px' }}>
+          {city}, {state}
         </div>
-        <PhaseBadge phase={phaseW1} />
-      </div>
-
-      {/* Score */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', marginBottom: '6px' }}>
-        <div style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: '88px',
-          fontWeight: 700,
-          lineHeight: 1,
-          color: scoreColor(scoreW1),
-          letterSpacing: '-1px',
-          textTransform: 'uppercase',
-        }}>
-          {displayScore}
-        </div>
-        <div style={{ paddingBottom: '14px' }}>
-          <div style={{ fontSize: '22px', color: 'var(--text-muted)', fontWeight: '600' }}>/100</div>
-          <div style={{ fontSize: '11px', color: scoreColor(scoreW1), fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-            {scoreLabel}
-          </div>
+        <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+          {month} {year} &nbsp;·&nbsp; 14-day demand outlook
         </div>
       </div>
 
-      {/* Anomaly */}
+      {/* Demand label */}
       <div style={{
-        fontSize: '13px',
-        color: Math.abs(anomalyF) >= 10 ? '#D97706' : 'var(--text-muted)',
-        marginBottom: '20px',
-        fontFamily: 'var(--font-mono)',
-        fontWeight: Math.abs(anomalyF) >= 10 ? '600' : '400',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '10px 16px',
+        background: labelCfg.bg,
+        border: `1px solid ${labelCfg.border}`,
+        borderRadius: 'var(--radius-md)',
+        alignSelf: 'flex-start',
       }}>
-        {anomalyLabel}
+        {(phaseW1 === 'SURGE' || phaseW1 === 'BUILDING') && (
+          <span className="pulse-dot" style={{ width: '7px', height: '7px', borderRadius: '50%', background: labelCfg.color, flexShrink: 0 }} />
+        )}
+        <span style={{
+          fontSize: '15px',
+          fontWeight: '700',
+          color: labelCfg.color,
+          letterSpacing: '0.01em',
+        }}>
+          {labelCfg.label}
+        </span>
       </div>
 
-      {/* Situation label */}
+      {/* Temperature comparison */}
       <div style={{
-        background: 'var(--accent-subtle)',
-        border: '1px solid var(--accent-border)',
-        borderRadius: 'var(--radius-sm)',
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: 'var(--radius-md)',
+        padding: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '10px',
+      }}>
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '2px' }}>
+          Temperature
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>This week</div>
+            <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-primary)', fontFamily: 'var(--font-display)', letterSpacing: '-0.5px' }}>
+              {Math.round(week1HighF)}°F
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              high &nbsp;/&nbsp; <span style={{ color: 'var(--text-secondary)' }}>{Math.round(week1LowF)}°F</span> low
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '4px' }}>10-yr avg ({month})</div>
+            <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', letterSpacing: '-0.5px' }}>
+              {Math.round(monthlyAvgHighF)}°F
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              high &nbsp;/&nbsp; {Math.round(monthlyAvgLowF)}°F low
+            </div>
+          </div>
+        </div>
+
+        {isSignificantAnomaly && (
+          <div style={{
+            fontSize: '13px',
+            color: anomalyF > 0 ? '#D97706' : '#3774BA',
+            fontWeight: '500',
+            paddingTop: '6px',
+            borderTop: '1px solid var(--border-subtle)',
+          }}>
+            {anomalyAbs}°F {anomalyDir} the 10-year average for {month}
+          </div>
+        )}
+        {!isSignificantAnomaly && (
+          <div style={{ fontSize: '13px', color: 'var(--text-muted)', paddingTop: '6px', borderTop: '1px solid var(--border-subtle)' }}>
+            Near the 10-year average for {month}
+          </div>
+        )}
+      </div>
+
+      {/* Week 2 outlook */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
         padding: '12px 16px',
-        marginBottom: '20px',
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-subtle)',
+        borderRadius: 'var(--radius-md)',
       }}>
-        <div style={{ fontSize: '10px', color: 'var(--accent)', fontFamily: 'var(--font-mono)', marginBottom: '4px', letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: '600' }}>
-          SITUATION
+        <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.05em', textTransform: 'uppercase', flexShrink: 0 }}>
+          Week 2
         </div>
-        <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)' }}>
-          {situationLabel}
-        </div>
-      </div>
-
-      {/* W2 outlook */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '5px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-            Week 2 Outlook
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '22px', fontWeight: '700', color: scoreColor(scoreW2), fontFamily: 'var(--font-display)' }}>
-              {scoreW2}
-            </span>
-            <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>/100</span>
-            <PhaseBadge phase={phaseW2} />
-          </div>
-        </div>
-        <div style={{
-          fontSize: '11px',
-          color: 'var(--text-muted)',
-          fontFamily: 'var(--font-mono)',
-          textAlign: 'right',
-          lineHeight: 1.5,
-        }}>
-          30-yr avg high<br />
-          <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>{monthlyAvgHighF.toFixed(0)}°F</span>
+        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: '500' }}>
+          {w2Summary}
         </div>
       </div>
     </div>

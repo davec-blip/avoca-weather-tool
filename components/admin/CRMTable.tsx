@@ -59,7 +59,7 @@ export default function CRMTable() {
                 <td style={tdStyle}>
                   <span style={regionBadge(r.region)}>{r.region}</span>
                 </td>
-                <td style={tdStyle}>{r.ae?.name ?? '—'}</td>
+                <td style={tdStyle}>{r.ae ? r.ae.name.split(' ')[0] : '—'}</td>
               </tr>
             ))}
           </tbody>
