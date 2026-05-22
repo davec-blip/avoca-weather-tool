@@ -26,19 +26,18 @@ export default function NarrativePanel({ leadId, noCard }: Props) {
           signal: controller.signal,
         })
 
-        const body = await res.text()
-
         if (!res.ok) {
-          setError(`API error ${res.status}${res.statusText ? ` ${res.statusText}` : ''}: ${body}`)
+          setError('Unable to generate report — please refresh the page.')
           setLoading(false)
           return
         }
 
+        const body = await res.text()
         setText(body)
         setLoading(false)
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(`Network error: ${(err as Error).message}`)
+        setError('Unable to generate report — please refresh the page.')
         setLoading(false)
       }
     }
@@ -81,10 +80,7 @@ export default function NarrativePanel({ leadId, noCard }: Props) {
     }
     return (
       <div style={errStyle}>
-        <div style={{ fontSize: '11px', color: '#DC2626', fontFamily: 'var(--font-mono)', fontWeight: '600', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '8px' }}>
-          Report Generation Failed
-        </div>
-        <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)', whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+        <div style={{ fontSize: '13px', color: '#DC2626', fontWeight: '500', lineHeight: 1.5 }}>
           {error}
         </div>
       </div>

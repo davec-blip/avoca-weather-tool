@@ -26,6 +26,13 @@ export async function POST(req: NextRequest) {
     const signals = lead.weatherSignals as WeatherSignals
     if (!signals) return new Response('No signals stored for this lead', { status: 400 })
 
+    // Return cached narrative if already generated — avoids redundant Claude calls on reload
+    if (lead.reportNarrative) {
+      return new Response(lead.reportNarrative, {
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      })
+    }
+
     // Recompute phases from stored signals using current logic — avoids stale DB values
     const scoreW1 = computeDemandScoreFromSignals(signals, 'w1')
     const scoreW2 = computeDemandScoreFromSignals(signals, 'w2')

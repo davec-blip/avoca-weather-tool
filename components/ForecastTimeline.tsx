@@ -32,8 +32,10 @@ function getExpectedDemand(high: number, low: number, avgHigh: number): { label:
   return { label: 'Typical', color: '#94A3B8' }
 }
 
-// Color-code background by temperature vs normal (using week high as proxy for urgency)
-function urgencyBg(high: number, avgHigh: number): string {
+// Color-code background by temperature — heat delta OR cold absolute thresholds
+function urgencyBg(high: number, low: number, avgHigh: number): string {
+  if (high >= 95 || low <= 20) return 'rgba(220,38,38,0.08)'
+  if (high >= 85 || low <= 35) return 'rgba(245,158,11,0.09)'
   const delta = high - avgHigh
   if (delta >= 15) return 'rgba(220,38,38,0.08)'
   if (delta >= 8)  return 'rgba(245,158,11,0.09)'
@@ -41,7 +43,9 @@ function urgencyBg(high: number, avgHigh: number): string {
   return '#F8FAFC'
 }
 
-function urgencyBorder(high: number, avgHigh: number): string {
+function urgencyBorder(high: number, low: number, avgHigh: number): string {
+  if (high >= 95 || low <= 20) return 'rgba(220,38,38,0.35)'
+  if (high >= 85 || low <= 35) return 'rgba(245,158,11,0.35)'
   const delta = high - avgHigh
   if (delta >= 15) return 'rgba(220,38,38,0.35)'
   if (delta >= 8)  return 'rgba(245,158,11,0.35)'
@@ -49,7 +53,9 @@ function urgencyBorder(high: number, avgHigh: number): string {
   return 'var(--border-subtle)'
 }
 
-function urgencyTextColor(high: number, avgHigh: number): string {
+function urgencyTextColor(high: number, low: number, avgHigh: number): string {
+  if (high >= 95 || low <= 20) return '#DC2626'
+  if (high >= 85 || low <= 35) return '#D97706'
   const delta = high - avgHigh
   if (delta >= 15) return '#DC2626'
   if (delta >= 8)  return '#D97706'
@@ -134,9 +140,9 @@ export default function ForecastTimeline({ signals }: Props) {
       {/* Day cells */}
       <div style={{ display: 'flex', gap: '3px', position: 'relative' }}>
         {days.map(day => {
-          const bg = urgencyBg(day.high, avgHigh)
-          const border = tooltip === day.index ? urgencyBorder(day.high, avgHigh) : 'var(--border-subtle)'
-          const tempColor = urgencyTextColor(day.high, avgHigh)
+          const bg = urgencyBg(day.high, day.low, avgHigh)
+          const border = tooltip === day.index ? urgencyBorder(day.high, day.low, avgHigh) : 'var(--border-subtle)'
+          const tempColor = urgencyTextColor(day.high, day.low, avgHigh)
 
           return (
             <div
@@ -240,8 +246,8 @@ export default function ForecastTimeline({ signals }: Props) {
         <div style={{
           marginTop: '12px',
           background: 'var(--bg-elevated)',
-          border: `1px solid ${urgencyBorder(days[tooltip].high, avgHigh)}`,
-          borderLeft: `3px solid ${urgencyTextColor(days[tooltip].high, avgHigh)}`,
+          border: `1px solid ${urgencyBorder(days[tooltip].high, days[tooltip].low, avgHigh)}`,
+          borderLeft: `3px solid ${urgencyTextColor(days[tooltip].high, days[tooltip].low, avgHigh)}`,
           borderRadius: 'var(--radius-sm)',
           padding: '14px 16px',
           display: 'flex',
@@ -271,7 +277,7 @@ export default function ForecastTimeline({ signals }: Props) {
           )}
           <div>
             <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>VS AVERAGE</div>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: urgencyTextColor(days[tooltip].high, avgHigh) }}>
+            <div style={{ fontSize: '14px', fontWeight: '600', color: urgencyTextColor(days[tooltip].high, days[tooltip].low, avgHigh) }}>
               {days[tooltip].high > avgHigh
                 ? `+${(days[tooltip].high - Math.round(avgHigh)).toFixed(0)}°F above`
                 : days[tooltip].high < avgHigh
@@ -292,10 +298,10 @@ export default function ForecastTimeline({ signals }: Props) {
       {/* Legend */}
       <div style={{ display: 'flex', gap: '16px', marginTop: '12px', flexWrap: 'wrap' }}>
         {[
-          { label: 'Well Above Avg', color: '#DC2626' },
-          { label: 'Above Avg',      color: '#D97706' },
-          { label: 'Slightly Above', color: '#3774BA' },
-          { label: 'Near Avg',       color: '#94A3B8' },
+          { label: 'Peak Demand',     color: '#DC2626' },
+          { label: 'Elevated Demand', color: '#D97706' },
+          { label: 'Shoulder',        color: '#3774BA' },
+          { label: 'Typical',         color: '#94A3B8' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <div style={{ width: '8px', height: '8px', borderRadius: '2px', background: l.color }} />
