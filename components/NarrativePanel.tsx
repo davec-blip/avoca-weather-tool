@@ -16,60 +16,33 @@ export default function NarrativePanel({ leadId }: Props) {
     const controller = new AbortController()
     abortRef.current = controller
 
-    async function stream() {
+    async function fetchReport() {
       try {
-        let res: Response
-        try {
-          res = await fetch('/api/generate-report', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ leadId }),
-            signal: controller.signal,
-          })
-        } catch (fetchErr) {
-          if ((fetchErr as Error).name === 'AbortError') return
-          setError(`Network error — could not reach the report API. (${(fetchErr as Error).message})`)
-          setLoading(false)
-          return
-        }
+        const res = await fetch('/api/generate-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ leadId }),
+          signal: controller.signal,
+        })
+
+        const body = await res.text()
 
         if (!res.ok) {
-          let body = ''
-          try { body = await res.text() } catch {}
-          setError(`API error ${res.status} ${res.statusText}${body ? `: ${body}` : ''}`)
+          setError(`API error ${res.status}${res.statusText ? ` ${res.statusText}` : ''}: ${body}`)
           setLoading(false)
           return
         }
 
-        if (!res.body) {
-          setError('API returned no response body (status 200 but empty).')
-          setLoading(false)
-          return
-        }
-
+        setText(body)
         setLoading(false)
-        const reader = res.body.getReader()
-        const decoder = new TextDecoder()
-
-        try {
-          while (true) {
-            const { done, value } = await reader.read()
-            if (done) break
-            const chunk = decoder.decode(value, { stream: true })
-            setText(prev => prev + chunk)
-          }
-        } catch (streamErr) {
-          if ((streamErr as Error).name === 'AbortError') return
-          setError(`Stream interrupted mid-response. (${(streamErr as Error).message})`)
-        }
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        setError(`Unexpected error: ${(err as Error).message}`)
+        setError(`Network error: ${(err as Error).message}`)
         setLoading(false)
       }
     }
 
-    stream()
+    fetchReport()
     return () => controller.abort()
   }, [leadId])
 

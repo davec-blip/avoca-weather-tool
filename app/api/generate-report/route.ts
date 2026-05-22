@@ -2,18 +2,20 @@ import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
 import { leads } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
-import Anthropic from '@anthropic-ai/sdk'
 import type { WeatherSignals } from '@/lib/weather/computeSignals'
 
-// Extend Vercel serverless timeout — streaming requires more than the 10s default
+// Extend Vercel serverless timeout — Claude generation can take 15–30s
 export const maxDuration = 60
 
 export async function POST(req: NextRequest) {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
-      return new Response('ANTHROPIC_API_KEY is not set in Vercel environment variables', { status: 500, headers: { 'Content-Type': 'text/plain' } })
+      return new Response('Config error: ANTHROPIC_API_KEY is not set in environment variables', {
+        status: 500,
+        headers: { 'Content-Type': 'text/plain' },
+      })
     }
-    const client = new Anthropic()
+
     const { leadId } = await req.json()
     if (!leadId) return new Response('Missing leadId', { status: 400 })
 
@@ -86,53 +88,34 @@ One paragraph. Concrete and specific to the situation label.
 1–2 sentences. Quantify what missed calls in the key window cost.
 Make it tangible with a dollar range.`
 
-    // Start the Anthropic stream — throws here if API key is missing or invalid
-    const stream = await client.messages.stream({
+    // Dynamic import so any SDK init error is caught by the try/catch above
+    const { default: Anthropic } = await import('@anthropic-ai/sdk')
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+    const message = await client.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1024,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],
     })
 
-    const encoder = new TextEncoder()
-    let fullText = ''
+    const text = message.content[0].type === 'text' ? message.content[0].text : ''
 
-    const readable = new ReadableStream({
-      async start(controller) {
-        try {
-          for await (const chunk of stream) {
-            if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
-              const text = chunk.delta.text
-              fullText += text
-              controller.enqueue(encoder.encode(text))
-            }
-          }
-          controller.close()
+    // Save to DB (fire-and-forget)
+    db.update(leads)
+      .set({ reportNarrative: text, reportGeneratedAt: new Date() })
+      .where(eq(leads.id, leadId))
+      .catch(err => console.error('DB narrative save failed:', err))
 
-          // Save narrative to DB (fire-and-forget)
-          db.update(leads)
-            .set({ reportNarrative: fullText, reportGeneratedAt: new Date() })
-            .where(eq(leads.id, leadId))
-            .catch(err => console.error('DB narrative save failed:', err))
-        } catch (streamErr) {
-          console.error('Stream error mid-flight:', streamErr)
-          controller.error(streamErr)
-        }
-      },
-    })
-
-    return new Response(readable, {
-      headers: {
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Transfer-Encoding': 'chunked',
-      },
+    return new Response(text, {
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     console.error('generate-report error:', message)
-    return new Response(
-      `generate-report failed: ${message}`,
-      { status: 500, headers: { 'Content-Type': 'text/plain' } }
-    )
+    return new Response(`generate-report failed: ${message}`, {
+      status: 500,
+      headers: { 'Content-Type': 'text/plain' },
+    })
   }
 }
